@@ -2,6 +2,7 @@ package projeto;
 
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -46,7 +47,7 @@ public class Ficheiro {
                 exames.add((Exame) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de utilizadores inexistente.");
+            System.out.println("Ficheiro de exames inexistente.");
         } catch (EOFException e){
             System.out.println("Reach end of file");
         } catch (IOException e) {
@@ -74,7 +75,7 @@ public class Ficheiro {
                 cursos.add((Curso) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de utilizadores inexistente.");
+            System.out.println("Ficheiro de cursos inexistente.");
         } catch (EOFException e){
             System.out.println("Reach end of file");
         } catch (IOException e) {
@@ -102,7 +103,7 @@ public class Ficheiro {
                 salas.add((Sala) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de utilizadores inexistente.");
+            System.out.println("Ficheiro de salas inexistente.");
         } catch (EOFException e){
             System.out.println("Reach end of file");
         } catch (IOException e) {
