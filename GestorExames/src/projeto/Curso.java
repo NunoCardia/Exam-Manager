@@ -63,11 +63,9 @@ public class Curso implements Serializable{
         //1 - existe curso e disciplina
         //-1 - existe curso mas não disciplina
         //0 - não existe curso
-        System.out.println("nome disciplina: "+nomeDisciplina);
         for(Curso csr: cursos){
             if(csr.getNome().equalsIgnoreCase(curso)){
                 for(Disciplina dsc: csr.getCadeiras()){
-                    System.out.println(dsc.getNome());
                     if(dsc.getNome().equalsIgnoreCase(nomeDisciplina)){
                         return 1;
                     }

@@ -20,66 +20,28 @@ public class Departamento {
     }
 
     public static void mainLoop() throws IOException {
-        boolean t=true;
         ArrayList<Pessoa> utilizadores = new ArrayList<Pessoa>();
         ArrayList<Curso> cursos = new ArrayList<Curso>();
         ArrayList<Exame> exames = new ArrayList<Exame>();
         ArrayList<Sala> salas = new ArrayList<Sala>();
-        init(t, utilizadores,cursos,exames,salas);
-        //fich.leFicheiroCurso(cursos);
-        //fich.leFicheiroExames(exames);
-        //fich.leFicheiroPessoa(utilizadores);
-        //fich.leFicheiroSala(salas);
+        init(utilizadores,cursos,exames,salas);
         handleChoice(utilizadores,cursos,exames,salas);
     }
 
-    public static void initUtilizadores(boolean t, ArrayList<Pessoa> utilizadores) throws IOException {
-        Ficheiro fich = new Ficheiro();
-        File file = new File("utilizadores.txt");
-        if(!file.exists() || file.length()==0){
-            try {
-                file.createNewFile();
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            fich.abreLeitura("utilizadores.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        while(t){
-            try{
-                utilizadores.add((Pessoa) fich.leObjeto());
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                t=false;
-            } catch (EOFException e){
-                System.out.println("reached end of file");
-                t=false;
-            } catch (IOException e) {
-                e.printStackTrace();
-                t=false;
-            }
-        }
-        fich.fechaLer();
-    }
 
-
-    public static void init(boolean t,ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos,ArrayList<Exame> exames,ArrayList<Sala> salas) throws IOException {
-        Ficheiro fich = new Ficheiro();
+    public static void init(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos,ArrayList<Exame> exames,ArrayList<Sala> salas) throws IOException {
+        FicheiroObjetos fich = new FicheiroObjetos();
         fich.leFicheiroExames(exames);
         fich.leFicheiroSalas(salas);
         fich.leFicheiroCurso(cursos);
-        initUtilizadores(t,utilizadores);
+        fich.initUtilizadores(utilizadores);
     }
 
     public static int menu(){
         Scanner sc = new Scanner(System.in);
         int option;
         while(true){
-            System.out.println("GESTOR DE EXAMES\n1 - Exames\n2 - Pessoal\n3 - Cursos\n4 - Salas\n0 - Sair");
+            System.out.println("GESTOR DE EXAMES\n1 - Exames\n2 - Pessoal\n3 - Cursos\n4 - Salas\n5 - Estatísticas\n0 - Sair");
             try{
                 option = Integer.parseInt(sc.nextLine());
                 if(option<0 || option>5)
@@ -87,14 +49,14 @@ public class Departamento {
                 else
                     return option;
             }
-            catch(InputMismatchException e){
-                System.out.println("INSERE UM DOS NUMEROS");
+            catch(NumberFormatException e){
+                System.err.println("Introduza um número de 1 a 5");
             }
         }
     }
 
     public static void close(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
-        Ficheiro fich = new Ficheiro();
+        FicheiroObjetos fich = new FicheiroObjetos();
         fich.updateUtilizadores(utilizadores);
         fich.updateExames(exames);
         fich.updateCursos(cursos);
@@ -105,8 +67,7 @@ public class Departamento {
     public static void handleChoice( ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
         Exame exame = new Exame();
         Curso curso = new Curso();
-        Docente doc = new Docente();
-        Ficheiro fich = new Ficheiro();
+        Estatisticas stats = new Estatisticas(utilizadores,salas,cursos,exames);
         Sala sala = new Sala();
         int number,i;
         int opcao = menu();
@@ -143,6 +104,8 @@ public class Departamento {
                 System.out.println(salas.size());
                 sala.menuSala(utilizadores,cursos,exames,salas);
                 break;
+            case 5:
+                stats.menuEstatisticas();
             case 0:
                 close(utilizadores,cursos,exames,salas);
                 break;

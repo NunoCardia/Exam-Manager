@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class Sala implements Serializable{
     protected String nome;
     protected int ocupacao;
+    private static final long serialVersionUID = -3680702783252467980L;
 
 
     //ADICIONAR FUNÇOES DE ADICIONAR, ALTERAR E REMOVER UMA SALA
@@ -197,18 +198,18 @@ public class Sala implements Serializable{
         return new Sala(nome, ocup);
     }
 
-    public boolean verificaSala(ArrayList<Sala> salas, ArrayList<Exame> exames, String nomeSala, Date horaExame) {
+    public boolean verificaSala(ArrayList<Sala> salas, ArrayList<Exame> exames, String nomeSala, Date horaExame,int duracao) {
         //ver se a sala existe; ver se está disponivel;
         Exame exame = new Exame();
-        Date newDate, exameDate = new Date();
+        Date horafinalExame,horaFinalNovoExame, date = new Date();
+        horaFinalNovoExame = exame.addMinutesToDate(duracao,horaExame);
         boolean test;
         test = checkInfSala(salas, nomeSala);
-        System.out.println("test: "+test);
         if (test) {
             for (Exame ex : exames) {
-                if (ex.getSala().getNome().equals(nomeSala)) {
-                    exameDate = exame.addMinutesToDate(ex.getDuracao(), ex.getDate());
-                    if ((ex.getDate().before(horaExame) || ex.getDate().equals(horaExame)) && exameDate.after(horaExame)) {
+                if (ex.getSala().getNome().equalsIgnoreCase(nomeSala)) {
+                    horafinalExame = exame.addMinutesToDate(ex.getDuracao(), ex.getDate());
+                    if((horaExame.after(ex.getDate()) && horaExame.before(horafinalExame)) || (horaFinalNovoExame.before(horafinalExame) && horaFinalNovoExame.after(ex.getDate()))) {
                         System.out.println("Sala ocupada");
                         return false;
                     }

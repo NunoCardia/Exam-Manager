@@ -1,5 +1,6 @@
 package projeto;
 
+import javax.print.Doc;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ public class Exame implements Serializable{
     protected HashMap<Aluno,Integer> notas;
     protected String tipoExame;
     protected Curso curso;
+    private static final long serialVersionUID = 8376677555692791479L;
 
     public Exame() {
     }
@@ -43,8 +45,10 @@ public class Exame implements Serializable{
         boolean control;
         Scanner sc = new Scanner(System.in);
         Departamento dep = new Departamento();
+        Exame exa = new Exame(),temp;
+        boolean ctrl;
         do {
-            System.out.println("Menu de exames\n1 - Criar Exame\n2 - Lançar as notas de um exame\n3 - Alterar um exame já marcado\n0 - voltar ao menu inicial");
+            System.out.println("Menu de exames\n1 - Criar Exame\n2 - Lançar as notas de um exame\n3 - Alterar um exame já marcado\n4 - Remover exame\n0 - voltar ao menu inicial");
             option = Integer.parseInt(sc.nextLine());
             switch (option){
                 case 1:
@@ -53,15 +57,16 @@ public class Exame implements Serializable{
                     break;
                 case 2:
                     do {
-                        System.out.println("Disciplina do exame: ");
-                        disciplina = sc.nextLine();
                         System.out.println("Curso do exame: ");
                         curso = sc.nextLine();
+                        System.out.println("Disciplina do exame: ");
+                        disciplina = sc.nextLine();
                         System.out.println("Época do exame: ");
-                        epoca = sc.nextLine();
-                        control = checkExame(exames,curso,disciplina,epoca);
-                    } while(!control);
-                    lancarNotas(exames,disciplina,epoca,curso);
+                        epoca = sc.nextLine();//mandar o exame como argumento em vez do curso disciplina epoca
+                        control = exa.inExameList(exames,cursos,disciplina,curso,epoca);
+                        temp = exa.returnExame(exames,disciplina,epoca,curso);
+                    } while(control || temp == null);
+                    lancarNotas(temp);
                     break;
                 case 3:
                     System.out.println("Disciplina do exame: ");
@@ -75,8 +80,26 @@ public class Exame implements Serializable{
                         parametro = sc.nextLine();
                         control = checkParameter(parametro);
                     }while(!control);
-                    alterarExame(utilizadores,cursos,exames,salas,parametro,disciplina,curso,epoca);
+                    alterarExame(utilizadores,cursos,exames,salas,parametro,disciplina,curso,epoca);//mandar o exame como argumento em vez do curso disciplina epoca
                     break;
+                case 4:
+                    do{
+                        System.out.println("Nome do curso: ");
+                        curso = sc.nextLine();
+                        System.out.println("Nome da disciplina: ");
+                        disciplina = sc.nextLine();
+                        System.out.println("Época: ");
+                        epoca = sc.nextLine();
+                        ctrl = exa.inExameList(exames,cursos,disciplina,curso,epoca);
+                        temp = exa.returnExame(exames,disciplina,epoca,curso);
+                    }while(!ctrl || temp == null);
+                    for(Exame ex: exames){
+                        if(ex.equals(temp)){
+                            exames.remove(ex);
+                            System.out.println("Exame removido com sucesso");
+                        }
+                    }
+                    recolocarDocentes(exames);
                 case 0:
                     dep.handleChoice(utilizadores,cursos,exames,salas);
                     break;
@@ -88,8 +111,19 @@ public class Exame implements Serializable{
         }while(option!=0);
     }
 
+    private void recolocarDocentes(ArrayList<Exame> exames) {
+        for(Exame ex: exames){
+            for(Docente doc: ex.getDisciplina().getDocentesAuxiliares()){
+                Date exDuration = ex.addMinutesToDate(ex.getDuracao(), ex.getDate());
+                if(doc.checkDocenteDisponivel(ex,doc,disciplina,ex.getDate(),exDuration)){
+                    ex.getVigilantes().add(doc);
+                    System.out.println("Docente que estava indisponível para o exame foi agora adicionado");
+                }
+            }
+        }
+    }
+
     private boolean checkExame(ArrayList<Exame> exames, String curso, String disciplina, String epoca) {
-        System.out.println("curso: "+curso+" disciplina: "+disciplina+" epoca: "+epoca);
         for(Exame ex: exames){
             System.out.println(ex.toString());
         }
@@ -104,29 +138,19 @@ public class Exame implements Serializable{
         return false;
     }
 
-    public HashMap<Aluno,Integer> inscreverAlunos(ArrayList<Pessoa> pessoas,String epoca,Disciplina disc, int nAnos){
-        HashMap<Aluno,Integer> temp = new HashMap<Aluno,Integer>();
+    public boolean inscreverAluno(String epoca,Aluno al, int nAnos){
         switch (epoca.toLowerCase()){
             case "normal":
-                for(Aluno al: disc.getAlunos()){
-                            temp.put(al,-1);
-                }
-                return temp;
+                return true;
             case "recurso":
-                for(Aluno al: disc.getAlunos()){
-                    temp.put(al,-1);
-                }
-                return temp;
+                return true;
             case "especial":
-                for(Aluno al: disc.getAlunos()){
-                    if(al.getAnoMatricula() == nAnos || al.getRegime().equalsIgnoreCase("trabalhor-estudante") || al.getRegime().equalsIgnoreCase("atleta") ||
-                            al.getRegime().equalsIgnoreCase("dirigente associativo")){
-                        temp.put(al,-1);
-                    }
+                if(al.getAnoMatricula() == nAnos || al.getRegime().equalsIgnoreCase("trabalhor-estudante") || al.getRegime().equalsIgnoreCase("atleta") ||
+                        al.getRegime().equalsIgnoreCase("dirigente associativo")){
+                    return true;
                 }
-                return temp;
         }
-        return null;
+        return false;
     }
 
     public boolean checkParameter(String parameter){
@@ -141,160 +165,203 @@ public class Exame implements Serializable{
         }
     }
 
+    public HashMap<Aluno,Integer> checkInscricoesExame(Exame ex,String epoca,Disciplina dsc, int nAnos){
+        HashMap<Aluno,Integer> alunos = new HashMap<Aluno,Integer>();
+        switch (epoca.toLowerCase()){
+            case "normal":
+                for(Aluno al: dsc.getAlunos()){
+                    alunos.put(al,-1);
+                }
+                return alunos;
+            case "recurso":
+                for(Aluno al: dsc.getAlunos()){
+                    alunos.put(al,-1);
+                }
+                return alunos;
+            case "especial":
+                for(Aluno al: dsc.getAlunos()){
+                    if(al.getAnoMatricula() == nAnos || al.getRegime().equalsIgnoreCase("trabalhor-estudante") || al.getRegime().equalsIgnoreCase("atleta") ||
+                            al.getRegime().equalsIgnoreCase("dirigente associativo")){
+                        alunos.put(al,-1);
+                    }
+                }
+                return alunos;
+
+        }
+        return null;
+    }
+
     public void alterarExame(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas,String param,String disciplina,String curso,String epoca){
-        String newValue,value2;
+        String newValue,value2,response;
         int value,test,i;
         boolean control = false, control2 = false;
+        long number;
         Curso csr = new Curso();
         Scanner sc = new Scanner(System.in);
         Exame ex = new Exame();
         Curso newCurso;
         Date exameDate = null;
-        Sala newSala;
-        Aluno alumni = new Aluno();
+        Sala newSala,sala = new Sala();
+        Docente docente = new Docente();
         ex = returnExame(exames,disciplina,epoca,curso);
         switch (param.toLowerCase()){
-            case "disciplina":
-                do {
-                    System.out.println("Nova disciplina: ");
-                    newValue = sc.nextLine();
-                    value = csr.checkCursoInf(cursos, newValue, curso);
-                    if (value == -1) {
-                        System.out.println("Disciplina não existe no curso indicado");
-                    }
-                }while (value == -1);
-                if(ex!=null){
-                    ex.setDisciplina(csr.parseDisciplina(cursos,newValue,curso));
-                    System.out.println("Disciplina alterada com sucesso");
+            case "data": //verificar docentes e funcionarios
+                System.out.println("Nova data de realização do exame: ");
+                newValue = sc.nextLine();
+                try {
+                    exameDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(newValue);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                break;
-            case "curso":
-                do{
-                    System.out.println("Novo curso: ");
-                    newValue = sc.nextLine();
-                    value = csr.checkCursoInf(cursos,disciplina,newValue);
-                    if(value == 0){
-                        System.out.println("Curso não existe");
-                    }
-                }while(value == 0);
-                newCurso = csr.parseCurso(cursos,newValue);
-                test = csr.parseCurso(newCurso,disciplina);
-                ex.setCurso(newCurso);
-                if(test == 0){
-                    System.out.println("Disciplina não existe no novo curso");
+                System.out.println("Nova duração do exame(minutos): ");
+                value = Integer.parseInt(sc.nextLine());
+                control = sala.verificaSala(salas,exames,ex.getSala().getNome(),exameDate,value);
+                if(!control){
                     do {
-                        System.out.println("Nova disciplina: ");
-                        newValue = sc.nextLine();
-                        value = csr.checkCursoInf(cursos, newValue, curso);
-                        if (value == -1) {
-                            System.out.println("Disciplina não existe no curso indicado");
+                        System.out.println("Terá de mudar a sala de exame se quiser alterar a data do mesmo\nPretende fazê-lo(sim/nao)");
+                        response = sc.nextLine();
+                    }while(!response.equalsIgnoreCase("sim") && !response.equalsIgnoreCase("nao"));
+                    if(response.equalsIgnoreCase("sim")){
+                        do{
+                            System.out.println("Nova sala para a realização do exame: ");
+                            newValue = sc.nextLine();
+                            control = sala.verificaSala(salas,exames,newValue,exameDate,value);
+                            newSala = sala.returnSala(salas,newValue);
+                        }while(!control);
+                        ex.setSala(newSala);
+                        System.out.println("Sala de exame alterada");
+                    }
+                    else break;
+                }
+                Date novaDuration = ex.addMinutesToDate(ex.getDuracao(),ex.getDate());
+                Docente docente1 = new Docente();
+                for(Exame exam: exames){
+                    if(!exam.equals(ex)){
+                        if(docente1.inVigilantesList(ex.getDocenteResponsavel(),exam.getVigilantes())){
+                            System.out.println("Docente "+ex.getDocenteResponsavel().getNome()+" não pode vigiar o exame uma vez que já tem um exame marcado para essa hora e é o regente dessa cadeira");
+                            exam.getVigilantes().remove(ex.getDocenteResponsavel());
                         }
-                    }while (value == -1);
-
-                    if(ex!=null){
-                        ex.setDisciplina(csr.parseDisciplina(cursos,newValue,curso));
-                        System.out.println("Disciplina alterada com sucesso");
+                        for(Iterator<Docente> it = ex.getVigilantes().iterator();it.hasNext();){
+                            Docente doc = it.next();
+                            if(!docente.checkDocenteDisponivel(exam,doc,exam.getDisciplina(),exameDate,novaDuration)){
+                                it.remove();
+                            }
+                        }
                     }
                 }
-                break;
-            case "data":
-                do{
-                    System.out.println("Nova data de realização do exame: ");
-                    newValue = sc.nextLine();
-                    try {
-                        exameDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(newValue);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("Nova duração do exame(minutos): ");
-                    value = Integer.parseInt(sc.nextLine());
-                    control = sala.verificaSala(salas,exames,ex.getSala().getNome(),exameDate);
-                }while(!control);
                 ex.setDate(exameDate);
                 ex.setDuracao(value);
                 System.out.println("Data do exame alterada com sucesso");
                 System.out.println("Duração do exame alterada com sucesso");
                 break;
-            case "sala":
+            case "sala": //ver se a sala está ocupada
                 do{
-                    System.out.println("Nova data de realização do exame: ");
+                    System.out.println("Nova sala para a realização do exame: ");
                     newValue = sc.nextLine();
-                    control = sala.verificaSala(salas,exames,newValue,ex.getDate());
+                    control = sala.verificaSala(salas,exames,newValue,ex.getDate(),ex.getDuracao());
                     newSala = sala.returnSala(salas,newValue);
                 }while(!control);
                 ex.setSala(newSala);
                 System.out.println("Sala de exame alterada");
                 break;
-            case "vigilantes":
+            case "vigilantes": //remover não há problema adicionar ver disponibilidade
+                control = false;
+                Docente doc;
+                Date sumDate;
                 do {
-                    System.out.println("Pretende remover ou adicionar vigilantes?: ");
+                    System.out.println("Pretende remover ou adicionar vigilantes?");
                     newValue = sc.nextLine();
-                }while(!newValue.equals("remover")|| !newValue.equals("adicionar"));
-                do {
-                    if(newValue.equals("remover")){
-                        System.out.println("Indique o nome do vigilante a remover: ");
-                        value2 = sc.nextLine();
-                        for(i=0;i < ex.getVigilantes().size();i++){
-                            if(ex.getVigilantes().get(i).getNome().equals(value2)){
-                                ex.getVigilantes().remove(i);
-                                System.out.println("Vigilante removido com sucesso");
-                                control = true;
-                            }
-                        }
-                        System.out.println("Vigilante não está associado ao exame indicado");
-                        control=false;
+                }while(!newValue.equalsIgnoreCase("remover") && !newValue.equalsIgnoreCase("adicionar"));
+                if(newValue.equals("remover")){
+                    System.out.println("Indique o nome do vigilante a remover: ");
+                    value2 = sc.nextLine();
+                    if(ex.getDocenteResponsavel().getNome().equalsIgnoreCase(value2)){
+                        System.out.println("Não pode remover o regente da cadeira");
+                        break;
                     }
-                    else if(newValue.equals("adicionar")){
-                        System.out.println("Indique o nome do vigilante a adicionar: ");
-                        value2 = sc.nextLine();
-                        for(Pessoa ps: utilizadores){
-                            if(ps instanceof Docente){
-                                if(((Docente) ps).getNome().equals(value2)){
-                                    //TODO disponibilidade dos docentes
-                                    ex.getVigilantes().add((Docente) ps);
-                                    control = true;
+                    for(i=0;i < ex.getVigilantes().size();i++){
+                        if(ex.getVigilantes().get(i).getNome().equals(value2)){
+                            ex.getVigilantes().remove(i);
+                            System.out.println("Vigilante removido com sucesso");
+                            control = true;
+                        }
+                    }
+                    if(!control){
+                        System.out.println("Vigilante não está associado ao exame indicado");
+                        break;
+                    }
+                }
+                else if(newValue.equals("adicionar")){
+                    control = false;
+                    System.out.println("Indique o nome do vigilante a adicionar: ");
+                    value2 = sc.nextLine();
+                    for(Pessoa ps: utilizadores){
+                        if(ps instanceof Docente){
+                            if(((Docente) ps).getNome().equalsIgnoreCase(value2)){
+                                doc = (Docente) ps;
+                                if(docente.inVigilantesList(doc,ex.getVigilantes()) || doc.getNome().equalsIgnoreCase(ex.getDocenteResponsavel().getNome())){
+                                    System.out.println("Vigilante ja pertence à lista de vigilantes do exame");
+                                    break;
+                                }
+                                for(Exame ex1: exames){
+                                    if(!ex1.equals(ex)){
+                                        sumDate = addMinutesToDate(ex1.getDuracao(),ex1.getDate());
+                                        if(docente.checkDocenteDisponivel(ex1,doc,ex1.getDisciplina(),ex1.getDate(),sumDate)){
+                                            ex.getVigilantes().add((Docente) ps);
+                                            System.out.println("Vigilante adicionado");
+                                            control = true;
+                                        }
+                                    }
                                 }
                             }
                         }
-                        System.out.println("Vigilante não existe no sistema volte a inserir o nome do vigilante");
-                        control = false;
                     }
-                }while(!control);
+                    if(!control){
+                        System.out.println("Docente não existe no sistema");
+                    }
+                }
                 break;
-            case "funcionario":
+            case "funcionarios":
+                control = false;
                 do {
                     System.out.println("Pretende remover ou adicionar funcionarios?: ");
                     newValue = sc.nextLine();
-                }while(!newValue.equals("remover")|| !newValue.equals("adicionar"));
-                do {
-                    if(newValue.equals("remover")){
-                        System.out.println("Indique o nome do vigilante a remover: ");
-                        value2 = sc.nextLine();
-                        for(i=0;i < ex.getFuncionarios().size();i++){
-                            if(ex.getFuncionarios().get(i).getNome().equals(value2)){
-                                ex.getFuncionarios().remove(i);
-                                System.out.println("Funcionario removido com sucesso");
+                }while(!newValue.equals("remover") && !newValue.equals("adicionar"));
+                if(newValue.equals("remover")){
+                    System.out.println("Indique o número do funcionario a remover: ");
+                    value2 = sc.nextLine();//todo protect
+                    number = Long.parseLong(value2);
+                    for(i=0;i < ex.getFuncionarios().size();i++){
+                        if(ex.getFuncionarios().get(i).getNumero() == number){
+                            ex.getFuncionarios().remove(i);
+                            System.out.println("Funcionario removido com sucesso");
+                            control = true;
+                        }
+                    }
+                    if(!control){
+                        System.out.println("Funcionario não está associado ao exame indicado");
+                        break;
+                    }
+                }
+                else if(newValue.equals("adicionar")){
+                    control = false;
+                    System.out.println("Indique o numero do funcionario a adicionar: ");
+                    value2 = sc.nextLine();
+                    number = Long.parseLong(value2);
+                    for(Pessoa ps: utilizadores){
+                        if(ps instanceof NaoDocente){
+                            if(((NaoDocente) ps).getNumero() == number){
+                                ex.getFuncionarios().add((NaoDocente) ps);
+                                System.out.println("Funcionario adicionado com sucesso");
                                 control = true;
                             }
                         }
-                        System.out.println("Funcionario não está associado ao exame indicado");
-                        control=false;
                     }
-                    else if(newValue.equals("adicionar")){
-                        System.out.println("Indique o nome do funcionario a adicionar: ");
-                        value2 = sc.nextLine();
-                        for(Pessoa ps: utilizadores){
-                            if(ps instanceof NaoDocente){
-                                if(((NaoDocente) ps).getNome().equals(value2)){
-                                    ex.getFuncionarios().add((NaoDocente) ps);
-                                    control = true;
-                                }
-                            }
-                        }
-                        System.out.println("Funcionario não existe no sistema volte a inserir o nome do funcionario");
-                        control = false;
+                    if(!control){
+                        System.out.println("Funcionario não existe no sistema");
+                        break;
                     }
-                }while(!control);
+                }
                 break;
             case "epoca":
                 Disciplina disc = csr.parseDisciplina(cursos,disciplina,curso);
@@ -303,40 +370,24 @@ public class Exame implements Serializable{
                     System.out.println("Nova época do exame: ");
                     newValue = sc.nextLine();
                 }while(!newValue.equalsIgnoreCase("normal")|| !newValue.equalsIgnoreCase("recurso")|| !newValue.equalsIgnoreCase("especial") || ex.getTipoExame().equalsIgnoreCase(newValue));
-                if(newValue.equals("normal")){
-                    ex.setTipoExame(newValue);
-                    ex.setNotas(inscreverAlunos(utilizadores,newValue,disc,newCurso.getDuracao()));
-                    System.out.println("Época de exame alterada\nFoi feita a inscrição dos alunos");
-                }
-                else if(newValue.equals("recurso")){
-                    ex.setTipoExame(newValue);
-                    ex.setNotas(inscreverAlunos(utilizadores,newValue,disc,newCurso.getDuracao()));
-                    System.out.println("Época de exame alterada\nFoi feita a inscrição dos alunos");
-                }
-                else if(newValue.equals("especial")){
-                    ex.setTipoExame(newValue);
-                    ex.setNotas(inscreverAlunos(utilizadores,newValue,disc,newCurso.getDuracao()));
-                    System.out.println("Época de exame alterada\nFoi feita a inscrição dos alunos");
-                }
+                ex.setTipoExame(newValue);
+                ex.setNotas(checkInscricoesExame(ex,newValue,disc,newCurso.getDuracao()));
+                System.out.println("Época de exame alterada\nFoi feita a inscrição dos alunos");
                 break;
 
         }
     }
 
     public Exame novoExame(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
-        //TODO proteçoes nos inputs, convocar automaticamente os vigilantes da disciplina em causa(exceto se tiverem sobreposição)
-        //TODO preferência: se o docente tiver sobreposição e seja auxiliar dessa cadeira e não auxiliar desta vai para o outro exame
-        //TODO preferencia: se o docente tiver sobreposição e não seja auxiliar em nenhum deles vai ao primeiro
-        //TODO preferencia: se o docente tiver sobreposição e seja auxiliar em todos deles vai ao primeiro
-        //TODO preferencia: se o docente tiver sobreposiçao e seja regente de uma dessas cadeiras deve ir para o exame onde é responsável
-        String curso,disc,epoca,docente,nDocente,novaSala,local,date;
-        int controlo, checkInf,nDocentes,i,nFuncionarios,duracao;
-        boolean ctrl,ctrlSala = false;
+        String curso,disc,epoca,docente,nDocente,novaSala,date;
+        int controlo, checkInf,nDocentes,i,nFuncionarios,duracao,nAlunos;
+        long aluno;
+        boolean ctrl = false,ctrlSala = false,docAux = true;
         Date exameDate = null;
         Disciplina disciplina;
         ArrayList<Docente> vigilantes = new ArrayList<Docente>();
         ArrayList<NaoDocente> funcionarios = new ArrayList<NaoDocente>();
-        Aluno newAluno  = new Aluno();
+        Aluno newAluno  = new Aluno(),al;
         HashMap<Aluno,Integer> notas = new HashMap<Aluno,Integer>();
         Scanner sc = new Scanner(System.in);
         Sala sala = new Sala(), newSala;
@@ -344,7 +395,6 @@ public class Exame implements Serializable{
         NaoDocente ndoc = new NaoDocente(),newNdoc;
         Curso csr = new Curso(),finalCurso = new Curso();
         System.out.println("CRIAÇÃO DE NOVO EXAME");
-        //nome do curso , nome da disciplina , e época de exame
         do{
             System.out.println("Nome do curso: ");
             curso = sc.nextLine();
@@ -356,7 +406,6 @@ public class Exame implements Serializable{
         }while(!ctrl);
         disciplina = csr.parseDisciplina(cursos,disc,curso);
         finalCurso = csr.parseCurso(cursos,curso);
-        System.out.println("hey..."+finalCurso.toString());
         //data e hora do exame ; duraçao em minutos do exame
         System.out.println("Data e hora do exame(yyyy-MM-dd HH:mm)");
         date = sc.nextLine();
@@ -375,26 +424,36 @@ public class Exame implements Serializable{
         ctrl = false;
         for(Exame ex: exames) {
             Date exDuration = ex.addMinutesToDate(ex.getDuracao(), ex.getDate());
-            if ((ex.getDate().before(exameDate) || ex.getDate().equals(exameDate)) && exDuration.after(exameDate)) {
+            Date novaDuration = ex.addMinutesToDate(duracao,exameDate);
+            if ((exameDate.after(ex.getDate()) && exameDate.before(exDuration)) || (novaDuration.before(exDuration) && novaDuration.after(ex.getDate()))) {
                 ctrl = true;
+                if(doc.checkDocenteDisponivel(ex, DocenteResponsavel,disciplina,exameDate,exDuration)){
+                    vigilantes.add(DocenteResponsavel);
+                }
                 for(i=0;i<disciplina.getDocentesAuxiliares().size();i++){
                     if(doc.checkDocenteDisponivel(ex,disciplina.getDocentesAuxiliares().get(i),disciplina,exameDate,exDuration)){
                         vigilantes.add(disciplina.getDocentesAuxiliares().get(i));
                     }
                 }
-                System.out.println("Número de docentes adicionais para vigiar o exame: ");
-                nDocentes = Integer.parseInt(sc.nextLine());
-                for(i=0;i<nDocentes;i++){
-                    do{
-                        System.out.println("Nome do docente: ");
-                        docente = sc.nextLine();
-                        newDoc = doc.parseDocente(utilizadores,docente);
-                        //ver se pode -->horas
-                        if(doc.checkDocenteDisponivel(ex,newDoc,disciplina,exameDate,exDuration)){
-                            vigilantes.add(newDoc);
-                            System.out.println("Docente vigilante adicionado");
-                        }
-                    }while(newDoc==null);
+                while (docAux){
+                    System.out.println("Número de docentes adicionais para vigiar o exame: ");
+                    nDocentes = Integer.parseInt(sc.nextLine());
+                    docAux = false;
+                    for(i=0;i<nDocentes;i++){
+                        do{
+                            System.out.println("Nome do docente: ");
+                            docente = sc.nextLine();
+                            newDoc = doc.parseDocente(utilizadores,docente);
+                            if(doc.checkDocenteDisponivel(ex,newDoc,disciplina,exameDate,exDuration)){
+                                vigilantes.add(newDoc);
+                                System.out.println("Docente vigilante adicionado");
+                                docAux = true;
+                            }
+                            else{
+                                docAux = false;
+                            }
+                        }while(newDoc==null);
+                    }
                 }
             }
         }
@@ -433,18 +492,41 @@ public class Exame implements Serializable{
                 System.out.println(sl.toString());
             }
             novaSala = sc.nextLine();
-            ctrlSala = sala.verificaSala(salas,exames,novaSala,exameDate);
+            ctrlSala = sala.verificaSala(salas,exames,novaSala,exameDate,duracao);
             newSala = sala.returnSala(salas,novaSala);
         }while(!ctrlSala);
         //associar alunos
-        System.out.println("A associar alunos...");
-        notas = inscreverAlunos(utilizadores,epoca,disciplina,finalCurso.getDuracao());
+        System.out.println("Número de alunos a associar ao exame: ");
+        nAlunos = Integer.parseInt(sc.nextLine());
+        for(i=0;i<nAlunos;i++){
+            ctrl = false;
+            while(!ctrl){
+                System.out.println("Número do aluno("+(i+1)+"º"+"): ");
+                aluno = Long.parseLong(sc.nextLine());
+                al = newAluno.parseAluno(utilizadores,aluno);
+                if(al==null){
+                    ctrl = false;
+                    System.out.println("Aluno não existe no sistema");
+                }
+                else{
+                    ctrl = true;
+                    if(!inscreverAluno(epoca,al,finalCurso.getDuracao())){
+                        System.out.println("Aluno não pode ser inscrito no exame");
+                    }
+                    else{
+                        notas.put(al,-1);
+                        System.out.println("Aluno inscrito no exame");
+                    }
+                }
+            }
+
+        }
         System.out.println(notas.size()+" alunos inscritos no exame");
         return new Exame(disciplina,exameDate,duracao,newSala,DocenteResponsavel,vigilantes,funcionarios,notas,epoca,finalCurso);
     }
 
+
     public boolean inExameList(ArrayList<Exame> exames,ArrayList<Curso> cursos, String nomeDisciplina, String curso, String epoca){
-        //confirma existência do curso e disciplina nesse curso
         Curso csr = new Curso();
         int checkInf;
         switch (checkInf = (csr.checkCursoInf(cursos,nomeDisciplina,curso))){
@@ -478,33 +560,35 @@ public class Exame implements Serializable{
 
     public Exame returnExame(ArrayList<Exame> exames,String disciplina,String epoca,String curso){
         for(Exame ex: exames){
-            if(ex.getDisciplina().getNome().equals(disciplina) && ex.getCurso().getNome().equals(curso) && ex.getTipoExame().equals(epoca)){
+            if(ex.getDisciplina().getNome().equalsIgnoreCase(disciplina) && ex.getCurso().getNome().equalsIgnoreCase(curso) && ex.getTipoExame().equalsIgnoreCase(epoca)){
                 return ex;
             }
         }
         return null;
     }
 
-    public void lancarNotas(ArrayList<Exame> exames,String disciplina,String epoca,String curso){
+    public void lancarNotas(Exame ex){
         int nota;
         Scanner sc = new Scanner(System.in);
-        for(Exame ex: exames){
-            if(ex.getDisciplina().getNome().equals(disciplina) && ex.getTipoExame().equals(epoca) && ex.getCurso().getNome().equals(curso)){
-                if(!ex.getNotas().containsValue(-1)){
-                    System.out.println("Notas já lançadas");
-                    return;
+        if(!ex.getNotas().containsValue(-1)){
+            System.out.println("Notas já lançadas");
+            return;
+        }
+        else{
+            for (Map.Entry<Aluno, Integer> entry : ex.getNotas().entrySet())
+            {
+                System.out.print(entry.getKey().getNumeroAluno()+": ");
+                nota = Integer.parseInt(sc.nextLine());
+                while (nota< 0 || nota>20){
+                    System.out.println("A nota que inseriu não é válida, por favor introduza uma nota válida: ");
+                    nota = Integer.parseInt(sc.nextLine());
                 }
-                else{
-                    for (Map.Entry<Aluno, Integer> entry : ex.getNotas().entrySet())
-                    {
-                        System.out.print(entry.getKey()+": ");
-                        nota = Integer.parseInt(sc.nextLine());
-                        entry.setValue(nota);
-                    }
-                }
+                entry.setValue(nota);
             }
         }
-        System.out.println("Notas do exame de "+disciplina+" lançadas");
+
+
+        System.out.println("Notas do exame de "+ex.getDisciplina().getNome()+" lançadas");
     }
 
 
@@ -590,17 +674,8 @@ public class Exame implements Serializable{
 
     @Override
     public String toString() {
-        return "Exame{" +
-                "disciplina=" + disciplina +
-                ", date=" + date +
-                ", duracao=" + duracao +
-                ", sala=" + sala +
-                ", docenteResponsavel=" + docenteResponsavel +
-                ", vigilantes=" + vigilantes +
-                ", funcionarios=" + funcionarios +
-                ", notas=" + notas +
-                ", tipoExame='" + tipoExame + '\'' +
-                ", curso=" + curso +
-                '}';
+        SimpleDateFormat date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+       return "Exame de "+disciplina.getNome()+"\tData e hora: "+date1.format(date)+"\tDuracao: "+duracao+"\tSala: "+sala.getNome()+"\tNúmero de vigilantes convocados: "
+               +vigilantes.size()+"\tAlunos inscritos: "+notas.size();
     }
 }

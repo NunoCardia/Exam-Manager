@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by cyberfox21 on 19/11/16.
  */
-public class Ficheiro {
+public class FicheiroObjetos {
     private ObjectInputStream iS;
     private ObjectOutputStream oS;
 
@@ -36,9 +36,40 @@ public class Ficheiro {
         oS.close();
     }
 
-    public void leFicheiroExames(ArrayList<Exame> exames) {
+    public static void initUtilizadores(ArrayList<Pessoa> utilizadores) throws IOException {
+        boolean t = true;
+        FicheiroObjetos fich = new FicheiroObjetos();
+        File file = new File("utilizadores.txt");
+        if(!file.exists() || file.length()==0){
+            file.createNewFile();
+            return;
+        }
+        fich.abreLeitura("utilizadores.txt");
+        while(t){
+            try{
+                utilizadores.add((Pessoa) fich.leObjeto());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                t=false;
+            } catch (EOFException e){
+                System.out.println("reached end of file");
+                t=false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                t=false;
+            }
+        }
+        fich.fechaLer();
+    }
+
+    public void leFicheiroExames(ArrayList<Exame> exames) throws IOException {
         FileInputStream is = null;
         ObjectInputStream ois= null;
+        File file = new File("exames.txt");
+        if(!file.exists()){
+            file.createNewFile();
+            return;
+        }
 
         try {
             is = new FileInputStream(new File("exames.txt"));
@@ -47,12 +78,9 @@ public class Ficheiro {
                 exames.add((Exame) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de exames inexistente.");
+            System.out.println("Ficheiro de objetos de exames inexistente.");
         } catch (EOFException e){
             System.out.println("Reach end of file");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Ficheiro de utilizadores lido com sucesso.");
         } catch (ClassNotFoundException e) {
             System.out.println("Nao encontrou objecto.");
         } finally {
@@ -64,9 +92,15 @@ public class Ficheiro {
         }
     }
 
-    public void leFicheiroCurso(ArrayList<Curso> cursos) {
+    public void leFicheiroCurso(ArrayList<Curso> cursos) throws IOException {
         FileInputStream is = null;
         ObjectInputStream ois= null;
+
+        File file = new File("cursos.txt");
+        if(!file.exists()){
+            file.createNewFile();
+            return;
+        }
 
         try {
             is = new FileInputStream(new File("cursos.txt"));
@@ -75,12 +109,9 @@ public class Ficheiro {
                 cursos.add((Curso) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de cursos inexistente.");
+            System.out.println("FicheiroObjetos de cursos inexistente.");
         } catch (EOFException e){
             System.out.println("Reach end of file");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Ficheiro de utilizadores lido com sucesso.");
         } catch (ClassNotFoundException e) {
             System.out.println("Nao encontrou objecto.");
         } finally {
@@ -92,23 +123,25 @@ public class Ficheiro {
         }
     }
 
-    public void leFicheiroSalas(ArrayList<Sala> salas) {
+    public void leFicheiroSalas(ArrayList<Sala> salas) throws IOException {
         FileInputStream is = null;
         ObjectInputStream ois= null;
+        File file = new File("salas.txt");
+        if(!file.exists()){
+            file.createNewFile();
+            return;
+        }
 
         try {
-            is = new FileInputStream(new File("salas.txt"));
+            is = new FileInputStream(file);
             ois = new ObjectInputStream(is);
             while (true) {
                 salas.add((Sala) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Ficheiro de salas inexistente.");
+            System.out.println("FicheiroObjetos de salas inexistente.");
         } catch (EOFException e){
             System.out.println("Reach end of file");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Ficheiro de utilizadores lido com sucesso.");
         } catch (ClassNotFoundException e) {
             System.out.println("Nao encontrou objecto.");
         } finally {

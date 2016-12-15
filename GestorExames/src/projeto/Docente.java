@@ -2,9 +2,7 @@ package projeto;
 
 import javax.print.Doc;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by cyberfox21 on 19/11/16.
@@ -81,117 +79,122 @@ public class Docente extends Funcionario implements Serializable{
         String nome = null,email,categoria,areaInvestigacao,param,test;
         Scanner sc = new Scanner(System.in);
         long numero;
-        int valor;
+        int valor = 0;
         boolean control;
         Departamento dep = new Departamento();
         do {
             System.out.println(utilizadores.size());
             System.out.println("MENU DE DOCENTE\n1 - Adicionar docente\n2 - Alterar dados de docente\n3 - Remover docente\n0 - voltar ao menu inicial");
-            valor = Integer.parseInt(sc.nextLine());
-            Docente doc;
-            switch (valor){
-                case 1:
-                    System.out.println("Nome do docente: ");
-                    nome = sc.nextLine();
-                    while(!protectChar(nome)){
-                        System.out.println("Nome inválido, por favor introduza um nome válido: ");
+            try {
+                valor = Integer.parseInt(sc.nextLine());
+                Docente doc;
+                switch (valor){
+                    case 1:
+                        System.out.println("Nome do docente: ");
                         nome = sc.nextLine();
-                    }
-                    System.out.println("Email: ");
-                    email = sc.nextLine();
-                    if(checkEmail(utilizadores,email)){
-                        System.out.println("Docente já se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Número de docente: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+                        while(!protectChar(nome)){
+                            System.out.println("Nome inválido, por favor introduza um nome válido: ");
+                            nome = sc.nextLine();
+                        }
+                        System.out.println("Email: ");
+                        email = sc.nextLine();
+                        if(checkEmail(utilizadores,email)){
+                            System.out.println("Docente já se encontra no sistema");
+                            break;
+                        }
+                        System.out.println("Número de docente: ");
                         test = sc.nextLine();
-                    }
-                    numero = Long.parseLong(test);
-                    if(checkCodigo(utilizadores,numero)){
-                        System.out.println("Docente já se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Categoria do docente: ");
-                    categoria = sc.nextLine();
-                    while(!protectChar(categoria)){
-                        System.out.println("Categoria inválida, por favor introduza uma categoria válida: ");
+                        while(!isNumeric(test)){
+                            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+                            test = sc.nextLine();
+                        }
+                        numero = Long.parseLong(test);
+                        if(checkCodigo(utilizadores,numero)){
+                            System.out.println("Docente já se encontra no sistema");
+                            break;
+                        }
+                        System.out.println("Categoria do docente: ");
                         categoria = sc.nextLine();
-                    }
-                    System.out.println("Área de investigação do docente: ");
-                    areaInvestigacao = sc.nextLine();
-                    while(!protectChar(areaInvestigacao)){
-                        System.out.println("Área de investigação inválida, por favor introduza uma área de investigação válida: ");
+                        while(!protectChar(categoria)){
+                            System.out.println("Categoria inválida, por favor introduza uma categoria válida: ");
+                            categoria = sc.nextLine();
+                        }
+                        System.out.println("Área de investigação do docente: ");
                         areaInvestigacao = sc.nextLine();
-                    }
-                    doc = new Docente(nome,email,numero,categoria,areaInvestigacao);
-                    for(Pessoa ps: utilizadores){
-                        if(ps instanceof Docente){
-                            if(((Docente) ps).equals(doc)){
-                                System.out.println("Docente já existe no sistema");
-                                break;
+                        while(!protectChar(areaInvestigacao)){
+                            System.out.println("Área de investigação inválida, por favor introduza uma área de investigação válida: ");
+                            areaInvestigacao = sc.nextLine();
+                        }
+                        doc = new Docente(nome,email,numero,categoria,areaInvestigacao);
+                        for(Pessoa ps: utilizadores){
+                            if(ps instanceof Docente){
+                                if(((Docente) ps).equals(doc)){
+                                    System.out.println("Docente já existe no sistema");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    utilizadores.add(doc);
-                    System.out.println("Docente adicionado ao sistema");
-                    break;
-                case 2:
-                    boolean t = false;
-                    System.out.println("Número mecanicográfico do docente: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numero = Long.parseLong(test);
-                    if(!checkCodigo(utilizadores,numero)){
-                        System.out.println("O docente não se encontra no sistema");
+                        utilizadores.add(doc);
+                        System.out.println("Docente adicionado ao sistema");
                         break;
-                    }
-                    System.out.println("Parâmetro a alterar: ");
-                    param = sc.nextLine();
-                    while(!protectArgs(param)){
-                        System.out.println("Parâmetro não existente por favor introduza um parâmetro válido: ");
+                    case 2:
+                        boolean t = false;
+                        System.out.println("Número mecanicográfico do docente: ");
+                        test = sc.nextLine();
+                        while(!isNumeric(test)){
+                            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+                            test = sc.nextLine();
+                        }
+                        numero = Long.parseLong(test);
+                        if(!checkCodigo(utilizadores,numero)){
+                            System.out.println("O docente não se encontra no sistema");
+                            break;
+                        }
+                        System.out.println("Parâmetro a alterar: ");
                         param = sc.nextLine();
-                    }
-                    t = changeParam(utilizadores,numero,param);
-                    break;
-                case 3:
-                    System.out.println("Número mecanicográfico do docente: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numero = Long.parseLong(test);
-                    if(!checkCodigo(utilizadores,numero)){
-                        System.out.println("O docente não se encontra no sistema");
+                        while(!protectArgs(param)){
+                            System.out.println("Parâmetro não existente por favor introduza um parâmetro válido: ");
+                            param = sc.nextLine();
+                        }
+                        t = changeParam(utilizadores,numero,param);
                         break;
-                    }
-                    for(Pessoa ps: utilizadores){
-                        if(ps instanceof Docente){
-                            if(((Docente) ps).getNumero() == numero){
-                                utilizadores.remove(((Docente) ps));
-                                nome = "done";
-                                System.out.println("Docente removido com sucesso");
-                                break;
+                    case 3:
+                        System.out.println("Número mecanicográfico do docente: ");
+                        test = sc.nextLine();
+                        while(!isNumeric(test)){
+                            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+                            test = sc.nextLine();
+                        }
+                        numero = Long.parseLong(test);
+                        if(!checkCodigo(utilizadores,numero)){
+                            System.out.println("O docente não se encontra no sistema");
+                            break;
+                        }
+                        for(Pessoa ps: utilizadores){
+                            if(ps instanceof Docente){
+                                if(((Docente) ps).getNumero() == numero){
+                                    utilizadores.remove(((Docente) ps));
+                                    nome = "done";
+                                    System.out.println("Docente removido com sucesso");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if(!nome.equals("done")){
-                        System.out.println("Docente não existe no sistema");
-                    }
-                    break;
-                case 0:
-                    dep.handleChoice(utilizadores,cursos,exames,salas);
-                    break;
-                default:
-                    System.out.println("Parâmetro não reconhecido");
-                    break;
+                        if(!nome.equals("done")){
+                            System.out.println("Docente não existe no sistema");
+                        }
+                        break;
+                    case 0:
+                        dep.handleChoice(utilizadores,cursos,exames,salas);
+                        break;
+                    default:
+                        System.out.println("Parâmetro não reconhecido");
+                        break;
+                }
+            } catch (NumberFormatException e){
+                System.err.println("Introduza um número de 1 a 3");
             }
+            
         }while(valor!=0);
     }
 
@@ -279,10 +282,13 @@ public class Docente extends Funcionario implements Serializable{
     }
 
     public void desconvocarDocente(Exame ex ,Docente doc){
-        for(Docente docente: ex.getVigilantes()){
-            if(docente.getNome().equalsIgnoreCase(doc.getNome())){
-                ex.getVigilantes().remove(doc);
-            }
+        Iterator<Docente> iter = ex.getVigilantes().iterator();
+
+        while (iter.hasNext()) {
+            Docente docente = iter.next();
+
+            if(docente.getNome().equalsIgnoreCase(doc.getNome()))
+                iter.remove();
         }
     }
 
@@ -296,10 +302,6 @@ public class Docente extends Funcionario implements Serializable{
     }
 
     public boolean checkDocenteDisponivel(Exame ex, Docente doc,Disciplina disc,Date date,Date finalDate) {
-        //TODO preferência: se o docente tiver sobreposição e seja auxiliar dessa cadeira e não auxiliar desta vai para o outro exame
-        //TODO preferencia: se o docente tiver sobreposição e não seja auxiliar em nenhum deles vai ao primeiro
-        //TODO preferencia: se o docente tiver sobreposição e seja auxiliar em todos deles vai ao primeiro
-        //TODO preferencia: se o docente tiver sobreposiçao e seja regente de uma dessas cadeiras deve ir para o exame onde é responsável
         //procurar em todos os exames: se existir um exame aquela hora ou que esteja a decorrer a essa hora
         if(ex.getDisciplina().getRegente().getNome().equalsIgnoreCase(doc.getNome())){
             System.out.println("Docente "+doc.getNome()+" não pode vigiar o exame uma vez que já tem um exame marcado para essa hora e é o regente " +
@@ -310,10 +312,6 @@ public class Docente extends Funcionario implements Serializable{
             System.out.println("Docente "+doc.getNome()+" disponível para vigiar o exame");
             return true;
         }
-        if(inVigilantesList(doc,ex.getVigilantes())){
-            System.out.println("Docente "+doc.getNome()+" não pode vigiar o exame uma vez que já se encontra a vigiar outro exame dentro do horário especificado");
-            return false;
-        }
         for (Docente docente: ex.getVigilantes()){
             if(disc.getRegente().getNome().equalsIgnoreCase(docente.getNome())){
                 System.out.println("Docente "+docente.getNome()+" é convocado para este exame uma vez que é o regente\nA desconvocar docente do exame...");
@@ -321,6 +319,10 @@ public class Docente extends Funcionario implements Serializable{
                 System.out.println("Docente "+docente.getNome()+" desconvocado do exame");
                 return true;
             }
+        }
+        if(inVigilantesList(doc,ex.getVigilantes())){
+            System.out.println("Docente "+doc.getNome()+" não pode vigiar o exame uma vez que já se encontra a vigiar outro exame dentro do horário especificado");
+            return false;
         }
         return true;
     }
