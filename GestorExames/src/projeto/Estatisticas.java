@@ -36,7 +36,17 @@ public class Estatisticas {
             System.out.println("MENU DE ESTATÍSTICAS\n1 - Listar exames\n2 - Listar alunos inscritos num exame e classificações obtidas" +
                     "\n3 - Listar exames em que um aluno está inscrito e classificações\n4 - Listar docentes e funcionários associados a um exame" +
                     "\n5 - Listar exames em que um docente ou funcionário está envolvido\n6 - Listar notas de um exame\n0 - voltar ao menu inicial");
-            choice = Integer.parseInt(sc.nextLine());
+            while (true){
+                try {
+                    choice = Integer.parseInt(sc.nextLine());
+                    if(choice< 0 ||choice>3){
+                        System.out.println("Número inválido");
+                    }
+                    else break;
+                }catch (NumberFormatException e){
+                    System.err.println("Introduza um número entre 1 e 6");
+                }
+            }
             switch (choice){
                 case 1:
                     toFile +="\nOpção nº1: \n";
@@ -121,7 +131,6 @@ public class Estatisticas {
                         ctrl = exa.inExameList(this.exames,this.cursos,disc,curso,epoca);
                         temp = exa.returnExame(this.exames,disc,epoca,curso);
                     }while(ctrl || temp==null);
-                    System.out.println("Vigilantes associados ao exame\n"+temp.getDocenteResponsavel().toString());
                     for(Docente doc: temp.getVigilantes()){
                         toFile+=doc.toString()+"\n";
                         System.out.println(doc.toString());

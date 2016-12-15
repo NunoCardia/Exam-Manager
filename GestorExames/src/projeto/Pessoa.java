@@ -1,7 +1,6 @@
 package projeto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * Created by cyberfox21 on 19/11/16.
@@ -9,6 +8,7 @@ import java.util.ArrayList;
 public abstract class Pessoa implements Serializable{
     protected String nome;
     protected String email;
+    private static final long serialVersionUID = -5106151026260138146L;
 
     public Pessoa(){}
 
@@ -17,8 +17,8 @@ public abstract class Pessoa implements Serializable{
         this.email = email;
     }
 
-    public void menuPessoas(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas) {
-        //menu para inserir, alterar e remover utilizadores
+    public void menuPessoas() {
+
     }
 
     public String getNome() {

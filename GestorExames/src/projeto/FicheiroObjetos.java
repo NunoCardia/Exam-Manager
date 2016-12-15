@@ -36,30 +36,42 @@ public class FicheiroObjetos {
         oS.close();
     }
 
-    public static void initUtilizadores(ArrayList<Pessoa> utilizadores) throws IOException {
+    public static void initUtilizadores(ArrayList<Pessoa> utilizadores) {
         boolean t = true;
         FicheiroObjetos fich = new FicheiroObjetos();
         File file = new File("utilizadores.txt");
         if(!file.exists() || file.length()==0){
-            file.createNewFile();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
             return;
         }
-        fich.abreLeitura("utilizadores.txt");
+        try {
+            fich.abreLeitura("utilizadores.txt");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
         while(t){
             try{
                 utilizadores.add((Pessoa) fich.leObjeto());
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
                 t=false;
             } catch (EOFException e){
-                System.out.println("reached end of file");
+                System.out.println("Ficheiro de utilizadores lido");
                 t=false;
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
                 t=false;
             }
         }
-        fich.fechaLer();
+        try {
+            fich.fechaLer();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public void leFicheiroExames(ArrayList<Exame> exames) throws IOException {
@@ -80,7 +92,7 @@ public class FicheiroObjetos {
         } catch (FileNotFoundException e) {
             System.out.println("Ficheiro de objetos de exames inexistente.");
         } catch (EOFException e){
-            System.out.println("Reach end of file");
+            System.out.println("Ficheiro exames lido");
         } catch (ClassNotFoundException e) {
             System.out.println("Nao encontrou objecto.");
         } finally {
@@ -111,7 +123,7 @@ public class FicheiroObjetos {
         } catch (FileNotFoundException e) {
             System.out.println("FicheiroObjetos de cursos inexistente.");
         } catch (EOFException e){
-            System.out.println("Reach end of file");
+            System.out.println("Ficheiro de cursos lido");
         } catch (ClassNotFoundException e) {
             System.out.println("Nao encontrou objecto.");
         } finally {
@@ -139,9 +151,9 @@ public class FicheiroObjetos {
                 salas.add((Sala) ois.readObject());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("FicheiroObjetos de salas inexistente.");
+            System.out.println("Ficheiro de objetos de salas inexistente.");
         } catch (EOFException e){
-            System.out.println("Reach end of file");
+            System.out.println("Ficheiro de salas lido");
         } catch (ClassNotFoundException e) {
             System.out.println("Nao encontrou objecto.");
         } finally {

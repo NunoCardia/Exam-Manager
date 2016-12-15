@@ -2,7 +2,8 @@ package projeto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -12,6 +13,10 @@ public class Aluno extends Pessoa implements Serializable{
     protected long numeroAluno;
     protected int anoMatricula;
     protected String regime;
+    private ArrayList<Pessoa> utilizadores;
+    private ArrayList<Curso> cursos;
+    private ArrayList<Exame> exames;
+    private ArrayList<Sala> salas;
     private static final long serialVersionUID = 2754295480662076666L;
 
     public Aluno(){}
@@ -21,6 +26,13 @@ public class Aluno extends Pessoa implements Serializable{
         this.numeroAluno = numeroAluno;
         this.anoMatricula = anoMatricula;
         this.regime = regime;
+    }
+
+    public Aluno(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
+        this.utilizadores = utilizadores;
+        this.cursos = cursos;
+        this.exames = exames;
+        this.salas = salas;
     }
 
     public boolean protectArgs(String param){
@@ -96,18 +108,27 @@ public class Aluno extends Pessoa implements Serializable{
         return false;
     }
 
-    public void menuPessoas(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
+    public void menuPessoas(){
         long numeroAluno;
         int anoMatricula,valor;
         String regime,nome = null,email,param,test;
-        boolean control = false;
         Scanner sc = new Scanner(System.in);
         Departamento dep = new Departamento();
+        Aluno al;
         do {
 
             System.out.println("MENU DE ALUNO\n1 - Adicionar aluno\n2 - Alterar dados de aluno\n3 - Remover aluno\n0 - Voltar ao menu inicial");
-            valor = Integer.parseInt(sc.nextLine());
-            Aluno al = new Aluno();
+            while (true){
+                try {
+                    valor = Integer.parseInt(sc.nextLine());
+                    if(valor< 0 ||valor>3){
+                        System.out.println("Número inválido");
+                    }
+                    else break;
+                }catch (NumberFormatException e){
+                    System.err.println("Introduza um número entre 1 e 3");
+                }
+            }
             switch (valor){
                 case 1:
                     System.out.println("Nome do aluno: ");
@@ -181,6 +202,9 @@ public class Aluno extends Pessoa implements Serializable{
                         param = sc.nextLine();
                     }
                     t = changeParam(utilizadores,numeroAluno,param);
+                    if(t){
+                        System.out.println("Parâmetro mudado com sucesso");
+                    }
                     break;
                 case 3:
                     System.out.println("Numero de aluno: ");
@@ -219,11 +243,10 @@ public class Aluno extends Pessoa implements Serializable{
     }
 
 
-    public boolean changeParam(ArrayList<Pessoa> utilizadores,long numero, String param){ //TODO PROTEÇÔES E ATUALIZAR EXAMES QUANDO O ALUNO MUDA REGIME E/OU ANO DE MATRICULA POR CAUSA DA EPOCA ESPECIAL
+    public boolean changeParam(ArrayList<Pessoa> utilizadores,long numero, String param){
         String newValue;
-        long newLong;
-        int newInt;
         Scanner sc = new Scanner(System.in);
+        Exame ex = new Exame();
         for(Pessoa ps: utilizadores){
             if(ps instanceof Aluno){
                 if(((Aluno) ps).getNumeroAluno() == numero){
@@ -270,7 +293,8 @@ public class Aluno extends Pessoa implements Serializable{
                                 newValue = sc.nextLine();
                             }
                             ((Aluno) ps).setAnoMatricula(Integer.parseInt(newValue));
-                            System.out.println("Ano de matrícula alterado para "+Long.parseLong(newValue));
+                            System.out.println("Ano de matrícula alterado para "+Integer.parseInt(newValue));
+                            verificaAnoAluno(exames,Integer.parseInt(newValue),(Aluno) ps);
                             return true;
                         case "regime":
                             System.out.println("Novo regime: ");
@@ -281,6 +305,7 @@ public class Aluno extends Pessoa implements Serializable{
                             }
                             ((Aluno) ps).setRegime(newValue);
                             System.out.println("Regime alterado para "+newValue);
+                            verificaRegimeAluno(exames,newValue,(Aluno) ps);
                             return true;
                         default:
                             System.out.println("Parâmetro não reconhecido");
@@ -291,6 +316,48 @@ public class Aluno extends Pessoa implements Serializable{
         }
         System.out.println("Aluno não existe no sistema");
         return false;
+    }
+
+    public void verificaAnoAluno(ArrayList<Exame> exames,int nAnos,Aluno al){
+        for(Exame exame : exames){
+            if(exame.getTipoExame().equalsIgnoreCase("especial")){
+                Iterator<Map.Entry<Aluno,Integer>> it = exame.getNotas().entrySet().iterator();
+                while(it.hasNext()) {
+                    Map.Entry<Aluno,Integer> entry = it.next();
+                    if (entry.getKey().getNumeroAluno() == al.getNumeroAluno()) {
+                        if(nAnos!=3){
+                            it.remove();
+                            System.out.println("Aluno removido do exame de "+exame.getDisciplina().getNome()+" devido à mudança de ano");
+                        }
+                    }
+                }
+                if(nAnos==3){
+                    exame.getNotas().put(al,-1);
+                    System.out.println("Aluno adicionado ao exame de "+exame.getDisciplina().getNome()+" da época "+exame.getTipoExame()+" devido à mudança de ano");
+                }
+            }
+        }
+    }
+
+    public void verificaRegimeAluno(ArrayList<Exame> exames,String regime,Aluno al){
+        for(Exame exame : exames){
+            if(exame.getTipoExame().equalsIgnoreCase("especial")){
+                Iterator<Map.Entry<Aluno,Integer>> it = exame.getNotas().entrySet().iterator();
+                while(it.hasNext()) {
+                    Map.Entry<Aluno,Integer> entry = it.next();
+                    if (entry.getKey().getNumeroAluno() == al.getNumeroAluno()) {
+                        if(regime.equalsIgnoreCase("normal")){
+                            it.remove();
+                            System.out.println("Aluno removido do exame de "+exame.getDisciplina().getNome()+" devido à mudança de regime");
+                        }
+                    }
+                }
+                if(regime.equalsIgnoreCase("atleta") || regime.equalsIgnoreCase("dirigente associativo") || regime.equalsIgnoreCase("trabalhador-estudante")){
+                    exame.getNotas().put(al,-1);
+                    System.out.println("Aluno adicionado ao exame de "+exame.getDisciplina().getNome()+" da época "+exame.getTipoExame()+" devido à mudança de regime");
+                }
+            }
+        }
     }
 
     public long getNumeroAluno() {

@@ -7,6 +7,7 @@ public abstract class Funcionario extends Pessoa{
 
     protected long numero;
     protected String categoria;
+    private static final long serialVersionUID = -769630088157646555L;
 
     public Funcionario(){}
 
@@ -14,19 +15,6 @@ public abstract class Funcionario extends Pessoa{
         super(nome,email);
         this.numero = numero;
         this.categoria = categoria;
-    }
-
-    public static boolean isNumeric(String str) {
-        if (str == null) {
-            return false;
-        }
-        int sz = str.length();
-        for (int i = 0; i < sz; i++) {
-            if (Character.isDigit(str.charAt(i)) == false) {
-                return false;
-            }
-        }
-        return true;
     }
 
 

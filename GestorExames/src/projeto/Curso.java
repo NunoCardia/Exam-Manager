@@ -14,6 +14,10 @@ public class Curso implements Serializable{
     protected int duracao;
     protected String grau;
     protected ArrayList<Disciplina> cadeiras;
+    private ArrayList<Pessoa> utilizadores;
+    private ArrayList<Curso> cursos;
+    private ArrayList<Exame> exames;
+    private ArrayList<Sala> salas;
     private static final long serialVersionUID = -266092762869874067L;
 
     public Curso() {}
@@ -25,6 +29,12 @@ public class Curso implements Serializable{
         this.cadeiras = cadeiras;
     }
 
+    public Curso(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas) {
+        this.utilizadores = utilizadores;
+        this.cursos = cursos;
+        this.exames = exames;
+        this.salas = salas;
+    }
 
     public boolean protectArgs(String param){
         if(!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("duracao") && !param.equalsIgnoreCase("grau") && !param.equalsIgnoreCase("disciplinas")){
@@ -108,17 +118,27 @@ public class Curso implements Serializable{
         return null;
     }
 
-    public void menuCurso(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
+    public void menuCurso(){
         Scanner sc = new Scanner(System.in);
         String nome,grau,param,nomeTemp = null;
         int i,valor;
         ArrayList<Disciplina> cadeiras = new ArrayList<Disciplina>();
         Disciplina disc = new Disciplina();
-        Curso csr = new Curso();
+        Curso csr;
         Departamento dep = new Departamento();
         do {
             System.out.println("MENU DE CURSOS\n1 - Adicionar curso\n2 - Alterar curso\n3 - Remover curso\n0 - voltar ao menu inicial");
-            valor = Integer.parseInt(sc.nextLine());
+            while (true){
+                try {
+                    valor = Integer.parseInt(sc.nextLine());
+                    if(valor< 0 ||valor>3){
+                        System.out.println("Número inválido");
+                    }
+                    else break;
+                }catch (NumberFormatException e){
+                    System.err.println("Introduza um número entre 1 e 3");
+                }
+            }
             switch (valor){
                 case 1:
                     System.out.println("Adicionar curso\nNome do curso: ");
@@ -174,7 +194,15 @@ public class Curso implements Serializable{
                         System.out.println("Nome do parâmetro a alterar: ");
                         param = sc.nextLine();
                     }while (!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("duracao") &&!param.equalsIgnoreCase("grau") && !param.equalsIgnoreCase("disciplinas"));
-                    mudaCurso(cursos,utilizadores,csr,param);
+                    for(Exame ex: exames){
+                        if(ex.getCurso().getNome().equalsIgnoreCase(csr.getNome())){
+                            System.out.println("Exames a decorrer por isso não pode alterar dados do curso");
+                            break;
+                        }
+                        else{
+                            mudaCurso(cursos,utilizadores,csr,param);
+                        }
+                    }
                     break;
                 case 3:
                     boolean t = false;
@@ -222,7 +250,7 @@ public class Curso implements Serializable{
                 csr.setNome(newValue);
                 System.out.println("Nome do curso mudado para "+newValue);
                 break;
-            case "duracao": //TODO VERIFICAR EXAMES - SE HOUVER EXAMES DEIXAR ALTERAR ELEMENTOS????
+            case "duracao":
                 do {
                     System.out.println("Nova duracao do curso: ");
                     valor = Integer.parseInt(sc.nextLine());

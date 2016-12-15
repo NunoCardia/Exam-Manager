@@ -12,11 +12,22 @@ import java.util.Scanner;
 public class Sala implements Serializable{
     protected String nome;
     protected int ocupacao;
+    private ArrayList<Pessoa> utilizadores;
+    private ArrayList<Curso> cursos;
+    private ArrayList<Exame> exames;
+    private ArrayList<Sala> salas;
     private static final long serialVersionUID = -3680702783252467980L;
 
 
-    //ADICIONAR FUNÇOES DE ADICIONAR, ALTERAR E REMOVER UMA SALA
+
     public Sala() {
+    }
+
+    public Sala(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas) {
+        this.utilizadores = utilizadores;
+        this.cursos = cursos;
+        this.exames = exames;
+        this.salas = salas;
     }
 
     public Sala(String nome, int ocupacao) {
@@ -76,8 +87,6 @@ public class Sala implements Serializable{
 
     public boolean alteraSala(ArrayList<Sala> salas,String nome,String param) {
         String newValue;
-        long newLong;
-        int newInt;
         Scanner sc = new Scanner(System.in);
         for(Sala sl: salas){
             if(sl.getNome().equalsIgnoreCase(nome)){
@@ -111,7 +120,7 @@ public class Sala implements Serializable{
         return false;
     }
 
-    public void menuSala(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
+    public void menuSala(){
         int valor;
         Scanner sc = new Scanner(System.in);
         Sala sl;
@@ -119,7 +128,17 @@ public class Sala implements Serializable{
         Departamento dep = new Departamento();
         do {
             System.out.println("MENU DE SALAS\n1 - Adicionar sala\n2 - Alterar dados de uma sala\n3 - Remover sala\n0 - voltar ao menu inicial");
-            valor = Integer.parseInt(sc.nextLine());
+            while (true){
+                try {
+                    valor = Integer.parseInt(sc.nextLine());
+                    if(valor< 0 ||valor>3){
+                        System.out.println("Número inválido");
+                    }
+                    else break;
+                }catch (NumberFormatException e){
+                    System.err.println("Introduza um número entre 1 e 3");
+                }
+            }
             switch (valor){
                 case 1:
                     sl = adicionaSala(salas);

@@ -1,6 +1,5 @@
 package projeto;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -10,12 +9,24 @@ import java.util.Scanner;
  */
 public class NaoDocente extends Funcionario implements Serializable{
     protected String cargo;
+    private ArrayList<Pessoa> utilizadores;
+    private ArrayList<Curso> cursos;
+    private ArrayList<Exame> exames;
+    private ArrayList<Sala> salas;
+    private static final long serialVersionUID = -6556321652959160285L;
 
     public NaoDocente(){}
 
     public NaoDocente(String nome, String email, long numero, String categoria,String cargo){
         super(nome, email, numero, categoria);
         this.cargo = cargo;
+    }
+
+    public NaoDocente(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
+        this.utilizadores = utilizadores;
+        this.cursos = cursos;
+        this.exames = exames;
+        this.salas = salas;
     }
 
     public boolean protectArgs(String param){
@@ -74,18 +85,27 @@ public class NaoDocente extends Funcionario implements Serializable{
     }
 
     @Override
-    public void menuPessoas(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas) {//TODO PROTEÇOES EM RELAÇAO A CARGOS ESPECIFICOS QUE ESTÃO NO ENUNCIADO
+    public void menuPessoas() {
         String nome = null,email,categoria,cargo,param,test;
         Scanner sc = new Scanner(System.in);
+        NaoDocente doc;
         Departamento dep = new Departamento();
         long numero;
         int valor;
         boolean control;
         do {
-
             System.out.println("MENU DE NÃO DOCENTE\n1 - Adicionar não docente\n2 - Alterar dados de não docente\n3 - Remover não docente\n0 - Voltar ao menu inicial");
-            valor = Integer.parseInt(sc.nextLine());
-            NaoDocente doc;
+            while (true){
+                try {
+                    valor = Integer.parseInt(sc.nextLine());
+                    if(valor< 0 ||valor>3){
+                        System.out.println("Número inválido");
+                    }
+                    else break;
+                }catch (NumberFormatException e){
+                    System.err.println("Introduza um número entre 1 e 3");
+                }
+            }
             switch (valor){
                 case 1:
                     System.out.println("Nome: ");
@@ -95,7 +115,7 @@ public class NaoDocente extends Funcionario implements Serializable{
                         nome = sc.nextLine();
                     }
                     System.out.println("Email: ");
-                    email = sc.nextLine();//TODO EMAIL VERIFICATION
+                    email = sc.nextLine();
                     if(checkEmail(utilizadores,email)){
                         System.out.println("Não docente já se encontra no sistema");
                         break;
@@ -147,6 +167,9 @@ public class NaoDocente extends Funcionario implements Serializable{
                         param = sc.nextLine();
                     }
                     t = changeParam(utilizadores,numero,param);
+                    if(t){
+                        System.out.println("Parâmetro mudado com sucesso");
+                    }
                     break;
                 case 3:
                     System.out.println("Número mecanicográfico do não docente: ");
@@ -187,8 +210,6 @@ public class NaoDocente extends Funcionario implements Serializable{
 
     private boolean changeParam(ArrayList<Pessoa> utilizadores, long numero, String param) {
         String newValue;
-        long newLong;
-        int newInt;
         Scanner sc = new Scanner(System.in);
         for(Pessoa ps: utilizadores){
             if(ps instanceof NaoDocente){
