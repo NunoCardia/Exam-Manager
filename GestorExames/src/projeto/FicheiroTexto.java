@@ -6,17 +6,14 @@ import java.io.*;
  * Created by cyberfox21 on 13/12/16.
  */
 public class FicheiroTexto {
-    BufferedReader buffReader;
-    BufferedWriter buffWriter;
+    BufferedWriter bw;
+    FileWriter fw;
 
     public FicheiroTexto(){
 
     }
 
     public void writeInFile(String content){
-        BufferedWriter bw = null;
-        FileWriter fw = null;
-
         try {
 
 

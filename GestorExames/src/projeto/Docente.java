@@ -8,10 +8,10 @@ import java.util.*;
  */
 public class Docente extends Funcionario implements Serializable{
     protected String areaInvestigacao;
-    private ArrayList<Pessoa> utilizadores;
-    private ArrayList<Curso> cursos;
-    private ArrayList<Exame> exames;
-    private ArrayList<Sala> salas;
+    protected ArrayList<Pessoa> utilizadores;
+    protected ArrayList<Curso> cursos;
+    protected ArrayList<Exame> exames;
+    protected ArrayList<Sala> salas;
     private static final long serialVersionUID = -4881665133653454264L;
 
     public Docente(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas) {

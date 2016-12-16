@@ -300,7 +300,7 @@ public class Exame implements Serializable{
                     System.out.println("Valor não é numérico por favor introduza um valor numérico: ");
                     valor = sc.nextLine();
                 }
-                value = Integer.parseInt(sc.nextLine());
+                value = Integer.parseInt(valor);
                 control = sala.verificaSala(salas,exames,ex.getSala().getNome(),exameDate,value);
                 if(!control){
                     do {
@@ -525,12 +525,13 @@ public class Exame implements Serializable{
                 ctrl = false;
             }
         }
+        System.out.println("Duração do exame(minutos): ");
         valor = sc.nextLine();
         while (!isNumeric(valor)){
             System.out.println("Valor não é numérico por favor introduza um valor numérico: ");
             valor = sc.nextLine();
         }
-        duracao = Integer.parseInt(sc.nextLine());
+        duracao = Integer.parseInt(valor);
         //docente responsável
         DocenteResponsavel = csr.getDocenteResponsavel(cursos,disc,curso);
         System.out.println("Docente responsável: "+DocenteResponsavel.getNome());
@@ -550,7 +551,8 @@ public class Exame implements Serializable{
                         vigilantes.add(disciplina.getDocentesAuxiliares().get(i));
                     }
                 }
-                while (docAux){
+                docAux = false;
+                while (!docAux){
                     System.out.println("Número de docentes adicionais para vigiar o exame: ");
                     valor = sc.nextLine();
                     while (!isNumeric(valor)){
@@ -593,16 +595,28 @@ public class Exame implements Serializable{
                 }while(newDoc==null);
             }
         }
-        System.out.println(vigilantes.size()+" vigilantes adicionados ao exame de "+disc);
-        System.out.println("Número de funcionários:");
-        nFuncionarios = Integer.parseInt(sc.nextLine());
-        for(i=0;i<nFuncionarios;i++){
-            System.out.println("Número mecanicográfico do funcionário: ");
-            nDocente = sc.nextLine();
-            newNdoc = ndoc.checkNaoDocente(utilizadores,Long.parseLong(nDocente));
-            if(newNdoc!=null){
-                funcionarios.add(newNdoc);
-                System.out.println("Funcionário adicionado");
+        System.out.println(vigilantes.size()+" vigilantes adicionados ao exame de "+disc.toUpperCase());
+        docAux = false;
+        while(!docAux){
+            System.out.println("Número de funcionários:");
+            nFuncionarios = Integer.parseInt(sc.nextLine());
+            if(nFuncionarios==0){
+                break;
+            }
+            for(i=0;i<nFuncionarios;i++){
+                System.out.println("Número mecanicográfico do funcionário: ");
+                nDocente = sc.nextLine();
+                newNdoc = ndoc.checkNaoDocente(utilizadores,Long.parseLong(nDocente));
+                if(newNdoc!=null){
+                    funcionarios.add(newNdoc);
+                    System.out.println("Funcionário adicionado");
+                    docAux = true;
+                }
+                else{
+                    System.out.println("Funcionário não existe no sistema");
+                    docAux = false;
+                    break;
+                }
             }
         }
         //sala

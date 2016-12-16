@@ -13,10 +13,10 @@ public class Aluno extends Pessoa implements Serializable{
     protected long numeroAluno;
     protected int anoMatricula;
     protected String regime;
-    private ArrayList<Pessoa> utilizadores;
-    private ArrayList<Curso> cursos;
-    private ArrayList<Exame> exames;
-    private ArrayList<Sala> salas;
+    protected ArrayList<Pessoa> utilizadores;
+    protected ArrayList<Curso> cursos;
+    protected ArrayList<Exame> exames;
+    protected ArrayList<Sala> salas;
     private static final long serialVersionUID = 2754295480662076666L;
 
     public Aluno(){}

@@ -9,11 +9,11 @@ import java.util.Scanner;
  */
 public class NaoDocente extends Funcionario implements Serializable{
     protected String cargo;
-    private ArrayList<Pessoa> utilizadores;
-    private ArrayList<Curso> cursos;
-    private ArrayList<Exame> exames;
-    private ArrayList<Sala> salas;
-    private static final long serialVersionUID = -6556321652959160285L;
+    protected ArrayList<Pessoa> utilizadores;
+    protected ArrayList<Curso> cursos;
+    protected ArrayList<Exame> exames;
+    protected ArrayList<Sala> salas;
+    protected static final long serialVersionUID = -6556321652959160285L;
 
     public NaoDocente(){}
 
