@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 
@@ -12,31 +17,78 @@ public class FicheiroObjetos {
     private ObjectInputStream iS;
     private ObjectOutputStream oS;
 
+    public FicheiroObjetos(){}
+
+    /**
+     *
+     * @param nomeFich nome do ficheiro
+     * @throws IOException
+     */
+
     public void abreLeitura(String nomeFich) throws IOException{
         iS = new ObjectInputStream(new FileInputStream(nomeFich));
     }
+
+    /**
+     *
+     * @param nomeFich nome do Ficheiro
+     * @throws IOException
+     */
 
     public void abreEscrita(String nomeFich) throws IOException{
         oS = new ObjectOutputStream(new FileOutputStream(nomeFich));
     }
 
+    /**
+     *
+     * @return Object Retorna o Objeto lido no ficheiro
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+
     public Object leObjeto() throws IOException,ClassNotFoundException{
             return iS.readObject();
     }
+
+    /**
+     *
+     * @param o Escreve no ficheiro correspondente o Objeto
+     * @throws IOException
+     */
 
     public void escreveObjeto(Object o) throws IOException{
         oS.writeObject(o);
     }
 
+    /**
+     *
+     * @throws IOException
+     */
+
     public void fechaLer() throws IOException{
         iS.close();
     }
 
-    public void fechaEscrever() throws IOException{
+    /**
+     *
+     * @throws IOException
+     */
+
+    public void fechaEscrita() throws IOException
+    {
         oS.close();
     }
 
-    public static void initUtilizadores(ArrayList<Pessoa> utilizadores) {
+    /**
+     * Método que permite ler os dados do ficheiro de utilizadores e guardá-los na ArrayList
+     * @param utilizadores  ArrayList de Pessoas
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException
+     * @throws EOFException
+     */
+
+    public void initUtilizadores(ArrayList<Pessoa> utilizadores) {
         boolean t = true;
         FicheiroObjetos fich = new FicheiroObjetos();
         File file = new File("utilizadores.txt");
@@ -74,6 +126,15 @@ public class FicheiroObjetos {
         }
     }
 
+    /**
+     * Método que permite ler os dados do ficheiro de exames e guardá-los na ArrayList
+     * @param exames  ArrayList de Exames
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException
+     * @throws EOFException
+     */
+
     public void leFicheiroExames(ArrayList<Exame> exames) throws IOException {
         FileInputStream is = null;
         ObjectInputStream ois= null;
@@ -103,6 +164,15 @@ public class FicheiroObjetos {
             }
         }
     }
+
+    /**
+     * Método que permite ler os dados do ficheiro de cursos e guardá-los na ArrayList
+     * @param cursos  ArrayList de Cursos
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException
+     * @throws EOFException
+     */
 
     public void leFicheiroCurso(ArrayList<Curso> cursos) throws IOException {
         FileInputStream is = null;
@@ -135,6 +205,15 @@ public class FicheiroObjetos {
         }
     }
 
+    /**
+     * Método que permite ler os dados do ficheiro de salas e guardá-los na ArrayList
+     * @param salas  ArrayList de Salas
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException
+     * @throws EOFException
+     */
+
     public void leFicheiroSalas(ArrayList<Sala> salas) throws IOException {
         FileInputStream is = null;
         ObjectInputStream ois= null;
@@ -165,6 +244,13 @@ public class FicheiroObjetos {
         }
     }
 
+    /**
+     * Método que permite escrever os dados no ficheiro de cursos
+     * @param cursos  ArrayList de Cursos
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+
     public void updateCursos(ArrayList<Curso> cursos) {
         File temp = new File("cursos.txt");
         FileOutputStream osfinal = null;
@@ -188,6 +274,13 @@ public class FicheiroObjetos {
             }
         }
     }
+
+    /**
+     * Método que permite escrever os dados no ficheiro de exames
+     * @param exames  ArrayList de Exames
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
 
     public void updateExames(ArrayList<Exame> exames) {
         File temp = new File("exames.txt");
@@ -213,6 +306,13 @@ public class FicheiroObjetos {
         }
     }
 
+    /**
+     * Método que permite escrever os dados no ficheiro de salas
+     * @param salas  ArrayList de Salas
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+
     public void updateSalas(ArrayList<Sala> salas) {
         File temp = new File("salas.txt");
         FileOutputStream osfinal = null;
@@ -236,6 +336,12 @@ public class FicheiroObjetos {
             }
         }
     }
+
+    /**
+     * Método que permite escrever os dados no ficheiro de utilizadores
+     * @param utilizadores  ArrayList de Pessoas
+     * @throws IOException
+     */
 
     public void updateUtilizadores(ArrayList<Pessoa> utilizadores){
         int i=0;

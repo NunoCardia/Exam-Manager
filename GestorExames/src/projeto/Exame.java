@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import javax.print.Doc;
@@ -49,6 +54,12 @@ public class Exame implements Serializable{
         this.curso = curso;
     }
 
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser uma String
+     * @param input  String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
     private static boolean protectChar(String input) {
         String simbols="?!.,;:_`´^/()%&$#[]{}=+*|\"";
         char [] items = input.replaceAll("\\s+","").toCharArray();
@@ -61,6 +72,12 @@ public class Exame implements Serializable{
         return true;
     }
 
+    /**
+     * Método que protege o input parameter quando o utilizador quer alterar algum dado sobre o objeto
+     * @param parameter String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
     public boolean checkParameter(String parameter){
         if(parameter.equalsIgnoreCase("disciplina")||parameter.equalsIgnoreCase("curso")||parameter.equalsIgnoreCase("data")||parameter.equalsIgnoreCase("duracao")||
                 parameter.equalsIgnoreCase("sala")||parameter.equalsIgnoreCase("vigilantes")||parameter.equalsIgnoreCase("funcionarios")||parameter.equalsIgnoreCase("alunos")||
@@ -72,6 +89,12 @@ public class Exame implements Serializable{
             return false;
         }
     }
+
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser inteiro
+     * @param str String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
 
     public static boolean isNumeric(String str) {
         if (str == null) {
@@ -86,6 +109,9 @@ public class Exame implements Serializable{
         return true;
     }
 
+    /**
+     * Método que apresenta ao utilizador o menu para esta classe
+     */
 
     public void menuExames(){
         int option = 0;
@@ -210,7 +236,12 @@ public class Exame implements Serializable{
         }while(option!=0);
     }
 
-    private void recolocarDocentes(ArrayList<Exame> exames) {
+    /**
+     * Método que permite recolocar os docentes que estavam indisponiveis de participar no exame e agora estão
+     * @param exames ArrayList de exames
+     */
+
+    public void recolocarDocentes(ArrayList<Exame> exames) {
         Docente docente = new Docente();
         for(Exame ex: exames){
             for(Docente doc: ex.getDisciplina().getDocentesAuxiliares()){
@@ -225,6 +256,13 @@ public class Exame implements Serializable{
         }
     }
 
+    /**
+     * Método que permite verificar se o aluno pode inscrever-se no exame
+     * @param epoca epoca do exame
+     * @param al objeto do tipo Aluno
+     * @param nAnos número de anos
+     * @return bool resultado da operação
+     */
 
     public boolean inscreverAluno(String epoca,Aluno al, int nAnos){
         switch (epoca.toLowerCase()){
@@ -240,6 +278,15 @@ public class Exame implements Serializable{
         }
         return false;
     }
+
+    /**
+     * Método que permite verificar se os alunos inscritos na disciplina podem de facto ir a exame
+     * @param epoca epoca do exame
+     * @param dsc objeto do tipo Disciplina
+     * @param nAnos número de anos
+     * @param ex Exame
+     * @return HashMap alunos inscritos
+     */
 
     public HashMap<Aluno,Integer> checkInscricoesExame(Exame ex,String epoca,Disciplina dsc, int nAnos){
         HashMap<Aluno,Integer> alunos = new HashMap<Aluno,Integer>();
@@ -266,6 +313,18 @@ public class Exame implements Serializable{
         }
         return null;
     }
+
+    /**
+     * Método que permite alterar dados de um exame
+     * @param epoca epoca do exame
+     * @param param parâmetro a alterar
+     * @param curso curso
+     * @param disciplina disciplina
+     * @param utilizadores ArrayList de utilizadores
+     * @param cursos ArrayList de cursos
+     * @param exames ArrayList de exames
+     * @param salas ArrayList de salas
+     */
 
     public void alterarExame(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas,String param,String disciplina,String curso,String epoca){
         String newValue,value2,response,valor;
@@ -472,6 +531,15 @@ public class Exame implements Serializable{
         }
     }
 
+    /**
+     * Método que permite alterar dados de um exame
+     * @param utilizadores ArrayList de utilizadores
+     * @param cursos ArrayList de cursos
+     * @param exames ArrayList de exames
+     * @param salas ArrayList de salas
+     * @return Exame novo Exame
+     */
+
     public Exame novoExame(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
         String curso,disc,epoca,docente,nDocente,novaSala,date,valor;
         int nDocentes,i,nFuncionarios,nAlunos;
@@ -664,6 +732,15 @@ public class Exame implements Serializable{
         return new Exame(disciplina,exameDate,duracao,newSala,DocenteResponsavel,vigilantes,funcionarios,notas,epoca,finalCurso);
     }
 
+    /**
+     * Método que permite verificar se já existe um exame marcado para uma disciplina
+     * @param epoca epoca do exame
+     * @param curso curso
+     * @param nomeDisciplina disciplina
+     * @param cursos ArrayList de cursos
+     * @param exames ArrayList de exames
+     * @return bool verifica o resultado da operação
+     */
 
     public boolean inExameList(ArrayList<Exame> exames,ArrayList<Curso> cursos, String nomeDisciplina, String curso, String epoca){
         Curso csr = new Curso();
@@ -689,6 +766,13 @@ public class Exame implements Serializable{
         return false;
     }
 
+    /**
+     * Método que permite adicionar a hora do exame com a sua duração
+     * @param minutes minutos a adicionar
+     * @param beforeTime data do exame
+     * @return Date nova data
+     */
+
     public Date addMinutesToDate(int minutes, Date beforeTime){
         final long ONE_MINUTE_IN_MILLIS = 60000;
 
@@ -696,6 +780,15 @@ public class Exame implements Serializable{
         Date afterAddingMins = new Date(curTimeInMs + (minutes * ONE_MINUTE_IN_MILLIS));
         return afterAddingMins;
     }
+
+    /**
+     * Método que permite retornar um objeto do tipo Exame, caso ele exista na lista de exames
+     * @param epoca epoca do exame
+     * @param curso curso
+     * @param disciplina disciplina
+     * @param exames ArrayList de exames
+     * @return Exame novo objeto do tipo Exame
+     */
 
     public Exame returnExame(ArrayList<Exame> exames,String disciplina,String epoca,String curso){
         for(Exame ex: exames){
@@ -706,6 +799,10 @@ public class Exame implements Serializable{
         return null;
     }
 
+    /**
+     * Método que permite lançar as notas de um exame
+     * @param ex exame
+     */
     public void lancarNotas(Exame ex){
         int nota;
         Scanner sc = new Scanner(System.in);

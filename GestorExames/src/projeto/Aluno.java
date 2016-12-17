@@ -1,5 +1,11 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,6 +41,11 @@ public class Aluno extends Pessoa implements Serializable{
         this.salas = salas;
     }
 
+    /**
+     * Método que protege o input param quando o utilizador quer alterar algum dado sobre o objeto
+     * @param param String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
     public boolean protectArgs(String param){
         if(!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("email") && !param.equalsIgnoreCase("numero de aluno") && !param.equalsIgnoreCase("ano de matricula") &&
                 !param.equalsIgnoreCase("regime")){
@@ -43,12 +54,24 @@ public class Aluno extends Pessoa implements Serializable{
         else return true;
     }
 
+    /**
+     * Método que protege o input Regime quando o utilizador quer introduzir o argumento Regime
+     * @param regime String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
     private boolean protectRegime(String regime) {
         if(!regime.equalsIgnoreCase("normal") && !regime.equalsIgnoreCase("trabalhador-estudante") &&!regime.equalsIgnoreCase("atleta") &&!regime.equalsIgnoreCase("dirigente associativo") &&!regime.equalsIgnoreCase("aluno de erasmus")){
             return false;
         }
         else return true;
     }
+
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser inteiro
+     * @param str String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
 
     public static boolean isNumeric(String str) {
         if (str == null) {
@@ -63,6 +86,12 @@ public class Aluno extends Pessoa implements Serializable{
         return true;
     }
 
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser uma String
+     * @param input  String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
     private static boolean protectChar(String input) {
         String simbols="?!.,;:_`´^/()%&$#[]{}=+*|\"";
         char [] items = input.replaceAll("\\s+","").toCharArray();
@@ -75,6 +104,13 @@ public class Aluno extends Pessoa implements Serializable{
         return true;
     }
 
+    /**
+     * Método que permite devolver um Aluno baseado no seu número
+     * @param utilizadores  ArrayList de pessoas
+     * @param numero  Número do aluno
+     * @return Aluno Retorna um aluno
+     */
+
     public Aluno parseAluno(ArrayList<Pessoa> utilizadores,long numero){
         for(Pessoa ps: utilizadores){
             if(ps instanceof Aluno){
@@ -85,6 +121,13 @@ public class Aluno extends Pessoa implements Serializable{
         }
         return null;
     }
+
+    /**
+     * Método que permite proteger a aplicação caso o utilizador introduza dois utilizadores iguais
+     * @param utilizadores ArrayList de pessoas
+     * @param email  email da nova Pessoa
+     * @return bool Verifica se o aluno já existe no sistema ou não
+     */
 
     public boolean checkEmail(ArrayList<Pessoa> utilizadores,String email){
         for(Pessoa ps: utilizadores){
@@ -97,6 +140,13 @@ public class Aluno extends Pessoa implements Serializable{
         return false;
     }
 
+    /**
+     * Método que permite proteger a aplicação caso o utilizador introduza dois utilizadores iguais
+     * @param utilizadores ArrayList de pessoas
+     * @param codigo  numero de aluno
+     * @return bool Verifica se o aluno já existe no sistema ou não
+     */
+
     public boolean checkCodigo(ArrayList<Pessoa> utilizadores,long codigo){
         for(Pessoa ps: utilizadores){
             if(ps instanceof Aluno){
@@ -107,6 +157,10 @@ public class Aluno extends Pessoa implements Serializable{
         }
         return false;
     }
+
+    /**
+     * Método que apresenta ao utilizador o menu para esta classe
+     */
 
     public void menuPessoas(){
         long numeroAluno;
@@ -242,6 +296,13 @@ public class Aluno extends Pessoa implements Serializable{
         }while(valor !=0);
     }
 
+    /**
+     * Método responsável por alterar dados do aluno
+     * @param utilizadores ArrayList de pessoas
+     * @param numero  numero de aluno
+     * @param param  parâmetro a alterar
+     * @return bool Verifica o resultado da operação
+     */
 
     public boolean changeParam(ArrayList<Pessoa> utilizadores,long numero, String param){
         String newValue;
@@ -318,6 +379,13 @@ public class Aluno extends Pessoa implements Serializable{
         return false;
     }
 
+    /**
+     * Método que permite verificar o ano do aluno e alterar o seu acesso a exames
+     * @param exames ArrayList de exames
+     * @param al  Aluno a verificar
+     * @param nAnos  número de anos
+     */
+
     public void verificaAnoAluno(ArrayList<Exame> exames,int nAnos,Aluno al){
         for(Exame exame : exames){
             if(exame.getTipoExame().equalsIgnoreCase("especial")){
@@ -338,6 +406,13 @@ public class Aluno extends Pessoa implements Serializable{
             }
         }
     }
+
+    /**
+     * Método que permite verificar o regime do aluno e alterar o seu acesso a exames
+     * @param exames ArrayList de exames
+     * @param regime  regime do aluno
+     * @param al  Aluno a verificar
+     */
 
     public void verificaRegimeAluno(ArrayList<Exame> exames,String regime,Aluno al){
         for(Exame exame : exames){

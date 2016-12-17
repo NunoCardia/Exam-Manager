@@ -1,12 +1,14 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
-/**
- * Created by cyberfox21 on 13/12/16.
- */
 public class Estatisticas {
 
     private ArrayList<Pessoa> utilizadores;
@@ -22,6 +24,10 @@ public class Estatisticas {
         this.cursos = cursos;
         this.exames = exames;
     }
+
+    /**
+     * Método que apresenta ao utilizador o menu para esta classe
+     */
 
     public void menuEstatisticas(){
         int choice;
@@ -212,6 +218,11 @@ public class Estatisticas {
         }while(choice!=0);
     }
 
+    /**
+     * Método que permite guardar a informação no ficheiro de texto das estatísticas
+     * @param content informação a guardar
+     */
+
     public void saveToFile(String content){
         FicheiroTexto text = new FicheiroTexto();
         Scanner sc = new Scanner(System.in);
@@ -225,8 +236,6 @@ public class Estatisticas {
             System.out.println("Pesquisa guardada no ficheiro");
         }
     }
-
-
 
 
     public ArrayList<Pessoa> getUtilizadores() {

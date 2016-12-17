@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.io.Serializable;
@@ -29,6 +34,12 @@ public class NaoDocente extends Funcionario implements Serializable{
         this.salas = salas;
     }
 
+    /**
+     * Método que protege o input param quando o utilizador quer alterar algum dado sobre o objeto
+     * @param param String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
     public boolean protectArgs(String param){
         if(!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("email") && !param.equalsIgnoreCase("numero") && !param.equalsIgnoreCase("categoria") &&
                 !param.equalsIgnoreCase("cargo")){
@@ -36,6 +47,12 @@ public class NaoDocente extends Funcionario implements Serializable{
         }
         else return true;
     }
+
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser inteiro
+     * @param str String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
 
     public static boolean isNumeric(String str) {
         if (str == null) {
@@ -50,7 +67,13 @@ public class NaoDocente extends Funcionario implements Serializable{
         return true;
     }
 
-    private static boolean protectChar(String input) {
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser uma String
+     * @param input  String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
+    public static boolean protectChar(String input) {
         String simbols="?!.,;:-_`´^/()%&$#[]{}=+*|\"";
         char [] items = input.replaceAll("\\s+","").toCharArray();
         for(char c: items) {
@@ -62,6 +85,13 @@ public class NaoDocente extends Funcionario implements Serializable{
         return true;
     }
 
+    /**
+     * Método que permite proteger a aplicação caso o utilizador introduza dois utilizadores iguais
+     * @param utilizadores ArrayList de pessoas
+     * @param email  email da nova Pessoa
+     * @return bool Verifica se o aluno já existe no sistema ou não
+     */
+
     public boolean checkEmail(ArrayList<Pessoa> utilizadores,String email){
         for(Pessoa ps: utilizadores){
             if(ps instanceof NaoDocente){
@@ -72,6 +102,13 @@ public class NaoDocente extends Funcionario implements Serializable{
         }
         return false;
     }
+
+    /**
+     * Método que permite proteger a aplicação caso o utilizador introduza dois utilizadores iguais
+     * @param utilizadores ArrayList de pessoas
+     * @param codigo  numero de aluno
+     * @return bool Verifica se o aluno já existe no sistema ou não
+     */
 
     public boolean checkCodigo(ArrayList<Pessoa> utilizadores,long codigo){
         for(Pessoa ps: utilizadores){
@@ -85,6 +122,10 @@ public class NaoDocente extends Funcionario implements Serializable{
     }
 
     @Override
+
+    /**
+     * Método que apresenta ao utilizador o menu para esta classe
+     */
     public void menuPessoas() {
         String nome = null,email,categoria,cargo,param,test;
         Scanner sc = new Scanner(System.in);
@@ -208,7 +249,15 @@ public class NaoDocente extends Funcionario implements Serializable{
         }while(valor !=0);
     }
 
-    private boolean changeParam(ArrayList<Pessoa> utilizadores, long numero, String param) {
+    /**
+     * Método responsável por alterar dados do nao docente
+     * @param utilizadores ArrayList de pessoas
+     * @param numero  numero de aluno
+     * @param param  parâmetro a alterar
+     * @return bool Verifica o resultado da operação
+     */
+
+    public boolean changeParam(ArrayList<Pessoa> utilizadores, long numero, String param) {
         String newValue;
         Scanner sc = new Scanner(System.in);
         for(Pessoa ps: utilizadores){
@@ -279,6 +328,13 @@ public class NaoDocente extends Funcionario implements Serializable{
         System.out.println("O não docente não existe no sistema");
         return false;
     }
+
+    /**
+     * Método responsável por retornar um objeto do tipo Nao Docente
+     * @param pessoas ArrayList de pessoas
+     * @param numero número do Nao Docente
+     * @return NaoDocente objeto do tipo Nao Docente
+     */
 
     public NaoDocente checkNaoDocente(ArrayList<Pessoa> pessoas, long numero){
         for(Pessoa ndoc: pessoas){

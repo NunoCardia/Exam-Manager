@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.io.IOException;
@@ -19,9 +24,14 @@ public class Departamento {
         }
     }
 
-    public static void mainLoop() throws IOException {
-
-    }
+    /**
+     * Método que permite iniciar a aplicação lendo os ficheiros de objetos e texto
+     * @param utilizadores ArrayList de pessoas
+     * @param cursos ArrayList de cursos
+     * @param exames ArrayList de exames
+     * @param salas  ArrayList de salas
+     * @throws IOException
+     */
 
     public static void init(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos,ArrayList<Exame> exames,ArrayList<Sala> salas) throws IOException {
         FicheiroObjetos fich = new FicheiroObjetos();
@@ -30,6 +40,11 @@ public class Departamento {
         fich.leFicheiroCurso(cursos);
         fich.initUtilizadores(utilizadores);
     }
+
+    /**
+     * Método que permite ao utilizador escolher a opção no menu incial
+     * @return int opção escolhida no menu
+     */
 
     public static int menu(){
         Scanner sc = new Scanner(System.in);
@@ -49,6 +64,15 @@ public class Departamento {
         }
     }
 
+    /**
+     * Método que permite fechar a aplicação escrevendo nos ficheiros de objetos o que está guardado nas ArrayLists
+     * @param utilizadores ArrayList de pessoas
+     * @param cursos ArrayList de cursos
+     * @param exames ArrayList de exames
+     * @param salas  ArrayList de salas
+     * @throws IOException
+     */
+
     public static void close(ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas) throws IOException{
         FicheiroObjetos fich = new FicheiroObjetos();
         fich.updateUtilizadores(utilizadores);
@@ -57,6 +81,16 @@ public class Departamento {
         fich.updateSalas(salas);
         System.out.println("Ficheiros atualizados");
     }
+
+    /**
+     * Método que redireciona o utilizador para a opção escolhida
+     * @param utilizadores ArrayList de pessoas
+     * @param cursos ArrayList de cursos
+     * @param exames ArrayList de exames
+     * @param salas  ArrayList de salas
+     * @throws NumberFormatException
+     * @throws IOException
+     */
 
     public static void handleChoice( ArrayList<Pessoa> utilizadores, ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
         Exame exame = new Exame(utilizadores,cursos,exames,salas);

@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.io.Serializable;
@@ -28,6 +33,12 @@ public class Docente extends Funcionario implements Serializable{
         this.areaInvestigacao = areaInvestigacao;
     }
 
+    /**
+     * Método que protege o input param quando o utilizador quer alterar algum dado sobre o objeto
+     * @param param String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
     public boolean protectArgs(String param){
         if(!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("email") && !param.equalsIgnoreCase("numero") && !param.equalsIgnoreCase("categoria") &&
                 !param.equalsIgnoreCase("area de investigacao")){
@@ -35,6 +46,12 @@ public class Docente extends Funcionario implements Serializable{
         }
         else return true;
     }
+
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser inteiro
+     * @param str String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
 
     public static boolean isNumeric(String str) {
         if (str == null) {
@@ -49,7 +66,13 @@ public class Docente extends Funcionario implements Serializable{
         return true;
     }
 
-    private static boolean protectChar(String input) {
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser uma String
+     * @param input  String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
+    public boolean protectChar(String input) {
         String simbols="?!.,;:-_`´^/()%&$#[]{}=+*|\"";
         char [] items = input.replaceAll("\\s+","").toCharArray();
         for(char c: items) {
@@ -60,6 +83,13 @@ public class Docente extends Funcionario implements Serializable{
         }
         return true;
     }
+
+    /**
+     * Método que permite proteger a aplicação caso o utilizador introduza dois utilizadores iguais
+     * @param utilizadores ArrayList de pessoas
+     * @param email  email da nova Pessoa
+     * @return bool Verifica se o aluno já existe no sistema ou não
+     */
 
     public boolean checkEmail(ArrayList<Pessoa> utilizadores,String email){
         for(Pessoa ps: utilizadores){
@@ -72,6 +102,13 @@ public class Docente extends Funcionario implements Serializable{
         return false;
     }
 
+    /**
+     * Método que permite proteger a aplicação caso o utilizador introduza dois utilizadores iguais
+     * @param utilizadores ArrayList de pessoas
+     * @param codigo  numero de aluno
+     * @return bool Verifica se o aluno já existe no sistema ou não
+     */
+
     public boolean checkCodigo(ArrayList<Pessoa> utilizadores,long codigo){
         for(Pessoa ps: utilizadores){
             if(ps instanceof Docente){
@@ -83,7 +120,9 @@ public class Docente extends Funcionario implements Serializable{
         return false;
     }
 
-
+    /**
+     * Método que apresenta ao utilizador o menu para esta classe
+     */
     @Override
     public void menuPessoas() {
         String nome = null,email,categoria,areaInvestigacao,param,test;
@@ -214,7 +253,14 @@ public class Docente extends Funcionario implements Serializable{
         }while(valor!=0);
     }
 
-    private boolean changeParam(ArrayList<Pessoa> utilizadores, long numero, String param) {
+    /**
+     * Método responsável por alterar dados do docente
+     * @param utilizadores ArrayList de pessoas
+     * @param numero  numero do docente
+     * @param param  parâmetro a alterar
+     * @return bool Verifica o resultado da operação
+     */
+    public boolean changeParam(ArrayList<Pessoa> utilizadores, long numero, String param) {
         String newValue;
         Scanner sc = new Scanner(System.in);
         for(Pessoa ps: utilizadores){
@@ -286,6 +332,11 @@ public class Docente extends Funcionario implements Serializable{
         return false;
     }
 
+    /**
+     * Método responsável por desconvocar um docente de um exame
+     * @param doc objeto do tipo Docente
+     * @param ex  objeto do tipo Exame
+     */
 
     public void desconvocarDocente(Exame ex ,Docente doc){
         Iterator<Docente> iter = ex.getVigilantes().iterator();
@@ -298,6 +349,12 @@ public class Docente extends Funcionario implements Serializable{
         }
     }
 
+    /**
+     * Método que verifica se um dado docente se encontra na lista de vigilantes de um exame
+     * @param doc Objeto do tipo Docente
+     * @param vigilantes ArrayList de docentes
+     * @return bool Verifica o resultado da operação
+     */
     public boolean inVigilantesList(Docente doc, ArrayList<Docente> vigilantes){
         for (Docente docente: vigilantes){
             if(docente.getNome().equalsIgnoreCase(doc.getNome())){
@@ -306,6 +363,16 @@ public class Docente extends Funcionario implements Serializable{
         }
         return false;
     }
+
+    /**
+     * Método que verifica se um docente está disponível para um exame
+     * @param ex objeto do tipo Exame
+     * @param doc objeto do tipo Docente
+     * @param disc objeto do tipo Disciplina
+     * @param date Data do novo exame
+     * @param finalDate data final do novo exame
+     * @return bool Verifica o resultado da operação
+     */
 
     public boolean checkDocenteDisponivel(Exame ex, Docente doc,Disciplina disc,Date date,Date finalDate) {
         //procurar em todos os exames: se existir um exame aquela hora ou que esteja a decorrer a essa hora
@@ -332,6 +399,13 @@ public class Docente extends Funcionario implements Serializable{
         }
         return true;
     }
+
+    /**
+     * Método responsável por retornar um objeto do tipo Docente
+     * @param pessoas ArrayList de pessoas
+     * @param nome nome do Docente
+     * @return Docente objeto do tipo Docente
+     */
 
     public Docente parseDocente(ArrayList<Pessoa> pessoas, String nome){
         for(Pessoa doc: pessoas){

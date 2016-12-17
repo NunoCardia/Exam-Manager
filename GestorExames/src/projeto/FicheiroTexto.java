@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.io.*;
@@ -12,6 +17,11 @@ public class FicheiroTexto {
     public FicheiroTexto(){
 
     }
+
+    /**
+     * Método que permite escrever os dados do ficheiro de estatísticas
+     * @param content  String que contém a informação a ser guardada
+     */
 
     public void writeInFile(String content){
         try {

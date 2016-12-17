@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.awt.*;
@@ -36,14 +41,13 @@ public class Curso implements Serializable{
         this.salas = salas;
     }
 
-    public boolean protectArgs(String param){
-        if(!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("duracao") && !param.equalsIgnoreCase("grau") && !param.equalsIgnoreCase("disciplinas")){
-            return false;
-        }
-        else return true;
-    }
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser inteiro
+     * @param str String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
 
-    public static boolean isNumeric(String str) {
+    public boolean isNumeric(String str) {
         if (str == null) {
             return false;
         }
@@ -57,7 +61,13 @@ public class Curso implements Serializable{
         return true;
     }
 
-    private static boolean protectChar(String input) {
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser uma String
+     * @param input  String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
+
+    public boolean protectChar(String input) {
         String simbols="?!.,;:-_`´^/()%&$#[]{}=+*|\"";
         char [] items = input.replaceAll("\\s+","").toCharArray();
         for(char c: items) {
@@ -68,6 +78,14 @@ public class Curso implements Serializable{
         }
         return true;
     }
+
+    /**
+     * Método que permite verificar se o curso e disciplina existem no sistema
+     * @param cursos ArrayList de cursos
+     * @param nomeDisciplina nome da disciplina
+     * @param curso nome do curso
+     * @return int resultado da verificação
+     */
 
     public int checkCursoInf(ArrayList<Curso> cursos, String nomeDisciplina, String curso){
         //1 - existe curso e disciplina
@@ -86,6 +104,13 @@ public class Curso implements Serializable{
         return 0;
     }
 
+    /**
+     * Método que permite retornar o curso
+     * @param cursos ArrayList de cursos
+     * @param curso nome do curso
+     * @return Curso Objeto do tipo Curso
+     */
+
     public Curso parseCurso(ArrayList<Curso> cursos, String curso){
         for(Curso csr: cursos){
             if(csr.getNome().equalsIgnoreCase(curso)){
@@ -95,15 +120,13 @@ public class Curso implements Serializable{
         return null;
     }
 
-    public int parseCurso(Curso curso, String disciplina){
-        int i=0;
-        for(i=0;i<curso.getCadeiras().size();i++){
-            if(curso.getCadeiras().get(i).equals(disciplina)){
-                return 1;
-            }
-        }
-        return 0;
-    }
+    /**
+     * Método que permite retornar uma disciplina dado o curso
+     * @param cursos ArrayList de cursos
+     * @param curso nome do curso
+     * @param nomeDisciplina nome da disciplina
+     * @return Disciplina Objeto do tipo Disciplina
+     */
 
     public Disciplina parseDisciplina(ArrayList<Curso> cursos, String nomeDisciplina, String curso){
         for(Curso csr: cursos){
@@ -117,6 +140,10 @@ public class Curso implements Serializable{
         }
         return null;
     }
+
+    /**
+     * Método que apresenta ao utilizador o menu para esta classe
+     */
 
     public void menuCurso(){
         Scanner sc = new Scanner(System.in);
@@ -235,6 +262,14 @@ public class Curso implements Serializable{
         } while(valor!=0);
     }
 
+    /**
+     * Método responsável por alterar dados do curso
+     * @param utilizadores ArrayList de pessoas
+     * @param cursos ArrayList de cursos
+     * @param param  parâmetro a alterar
+     * @param csr objeto do tipo Curso a alterar
+     */
+
     private void mudaCurso(ArrayList<Curso> cursos,ArrayList<Pessoa> utilizadores,Curso csr, String param) {
         String newValue = null,grau;
         int valor;
@@ -326,6 +361,13 @@ public class Curso implements Serializable{
         }
     }
 
+    /**
+     * Método que permite retornar o docente responsável de uma disciplina
+     * @param cursos ArrayList de cursos
+     * @param disciplina  nome da disciplina
+     * @param curso nome do curso
+     * @return Docente objeto do tipo Docente
+     */
 
     public Docente getDocenteResponsavel(ArrayList<Curso> cursos, String disciplina,String curso){
         for(Curso csr: cursos){

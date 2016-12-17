@@ -1,3 +1,8 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.io.Serializable;
@@ -16,7 +21,9 @@ public abstract class Pessoa implements Serializable{
         this.nome = nome;
         this.email = email;
     }
-
+    /**
+     * Método que apresenta ao utilizador o menu
+     */
     public void menuPessoas() {
 
     }

@@ -1,12 +1,14 @@
+/**
+ * *
+ * @author Nuno Ferreira
+ */
+
 package projeto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Created by cyberfox21 on 19/11/16.
- */
 public class Disciplina implements Serializable{
     protected String nome;
     protected Docente regente;
@@ -32,15 +34,13 @@ public class Disciplina implements Serializable{
         return null;
     }
 
-    public boolean protectArgs(String param){
-        if(!param.equalsIgnoreCase("nome") && !param.equalsIgnoreCase("email") && !param.equalsIgnoreCase("numero") && !param.equalsIgnoreCase("categoria") &&
-                !param.equalsIgnoreCase("area de investigacao")){
-            return false;
-        }
-        else return true;
-    }
+    /**
+     * Método que permite proteger qualquer input que o utilizador introduza no caso de este ser inteiro
+     * @param str String a ser protegida
+     * @return bool Verifica se o input é válido ou não
+     */
 
-    public static boolean isNumeric(String str) {
+    public boolean isNumeric(String str) {
         if (str == null) {
             return false;
         }
@@ -53,17 +53,11 @@ public class Disciplina implements Serializable{
         return true;
     }
 
-    private static boolean protectChar(String input) {
-        String simbols="?!.,;:-_`´^/()%&$#[]{}=+*|\"";
-        char [] items = input.replaceAll("\\s+","").toCharArray();
-        for(char c: items) {
-            if(!Character.isLetter(c) || simbols.indexOf(c)!=-1) {
-                return false;
-
-            }
-        }
-        return true;
-    }
+    /**
+     * Método que retorna o docente responsável pela cadeira
+     * @param utilizadores ArrayList de Pessoas
+     * @return Docente objeto do tipo Docente
+     */
 
     public Docente adicionarRegente(ArrayList<Pessoa> utilizadores){
         Scanner sc = new Scanner(System.in);
@@ -93,6 +87,12 @@ public class Disciplina implements Serializable{
         return DocRegente;
     }
 
+    /**
+     * Método que retorna uma ArrayList de docentes auxiliares de uma disciplina
+     * @param utilizadores ArrayList de Pessoa
+     * @return ArrayList arraylist de docentes auxiliares
+     */
+
     public ArrayList<Docente> adicionarAuxiliares(ArrayList<Pessoa> utilizadores){
         Scanner sc = new Scanner(System.in);
         int valor,i;
@@ -120,6 +120,12 @@ public class Disciplina implements Serializable{
         }
         return docentesAuxiliares;
     }
+
+    /**
+     * Método que retorna uma ArrayList de alunos inscritos numa disciplina
+     * @param utilizadores ArrayList de Pessoa
+     * @return ArrayList arraylist de alunos
+     */
 
     public ArrayList<Aluno> adicionarAlunos(ArrayList<Pessoa> utilizadores){
         Scanner sc = new Scanner(System.in);
@@ -163,6 +169,12 @@ public class Disciplina implements Serializable{
         return alunos;
     }
 
+    /**
+     * Método que permite criar uma disciplina
+     * @param utilizadores ArrayList de Pessoa
+     * @return Disciplina novo objeto Disciplina
+     */
+
     public Disciplina newDisciplina(ArrayList<Pessoa> utilizadores){
         Scanner sc = new Scanner(System.in);
         int i,valor;
@@ -190,6 +202,14 @@ public class Disciplina implements Serializable{
         alunos = adicionarAlunos(utilizadores);
         return new Disciplina(nome,DocRegente,docentesAuxiliares,alunos);
     }
+
+    /**
+     * Método que permite ao utilizador alterar qualquer informação sobre as cadeiras
+     * @param utilizadores ArrayList de Pessoa
+     * @param csr objeto do tipo Curso
+     * @param disc objeto do tipo Disciplina
+     * @return Disciplina disciplina com os novos dados
+     */
 
     public Disciplina alteraCadeiras(ArrayList<Pessoa> utilizadores,Curso csr,Disciplina disc){
         String newValue,param;
