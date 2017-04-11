@@ -1,8 +1,0 @@
-acabar de testar cursos e disciplinas - restriçoes no regime de aluno, categoria do docente e escrever função para verificar email;
-fazer menu para as salas
-testar menu das salas
-resolver o problema de os ficheiros estarem vazios
-testar exames - horas de cada um
-implementar funçao de mudança de exames - quando mudamos certos aspetos sobre os cursos ou cadeiras temos de ver se fica tudo bem ou não
-não deixar alterar nada do curso ou cadeira enquanto houver exames - implementar isto
-ao alterar o proprio exame verificar alunos inscritos
