@@ -7,6 +7,14 @@
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
+/bin/
+/.idea
+/GestorExames.eml
+/GestorExames.iml
+/TODO.txt
+/report.docx
+/projetoPOO.iml
+/POO-project.userlibraries
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
