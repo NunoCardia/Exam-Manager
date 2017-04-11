@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="GestorExames">
-    <output-path>$PROJECT_DIR$/out/artifacts/GestorExames</output-path>
-    <root id="archive" name="GestorExames.jar">
-      <element id="module-output" name="GestorExames" />
-    </root>
-  </artifact>
-</component>
