@@ -281,7 +281,10 @@ public class Sala implements Serializable{
                 if (ex.getSala().getNome().equalsIgnoreCase(nomeSala)) {
                     horafinalExame = exame.addMinutesToDate(ex.getDuracao(), ex.getDate());
                     //se a nova hora estiver entre a hora inicial do exame e a hora final do exame
-                    if((horaExame.after(ex.getDate()) && horaExame.before(horafinalExame)) || (horaFinalNovoExame.before(horafinalExame) && horaFinalNovoExame.after(ex.getDate()))) {
+                    boolean f1 = horaExame.after(ex.getDate()) && horaExame.before(horafinalExame);
+                    boolean f2 = horaFinalNovoExame.before(horafinalExame) && horaFinalNovoExame.after(ex.getDate());
+                    boolean f3 = horaExame.before(ex.getDate()) && horaFinalNovoExame.after(horafinalExame);
+                    if(f1 || f2 || f3) {
                         System.out.println("Sala ocupada");
                         return false;
                     }

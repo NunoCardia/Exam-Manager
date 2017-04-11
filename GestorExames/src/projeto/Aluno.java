@@ -163,12 +163,9 @@ public class Aluno extends Pessoa implements Serializable{
      */
 
     public void menuPessoas(){
-        long numeroAluno;
-        int anoMatricula,valor;
-        String regime,nome = null,email,param,test;
+        int valor;
         Scanner sc = new Scanner(System.in);
         Departamento dep = new Departamento();
-        Aluno al;
         do {
 
             System.out.println("MENU DE ALUNO\n1 - Adicionar aluno\n2 - Alterar dados de aluno\n3 - Remover aluno\n0 - Voltar ao menu inicial");
@@ -185,106 +182,13 @@ public class Aluno extends Pessoa implements Serializable{
             }
             switch (valor){
                 case 1:
-                    System.out.println("Nome do aluno: ");
-                    nome = sc.nextLine();
-                    while(!protectChar(nome)){
-                        System.out.println("Nome inválido, por favor introduza um nome válido: ");
-                        nome = sc.nextLine();
-                    }
-                    System.out.println("Email: ");
-                    email = sc.nextLine();
-                    if(checkEmail(utilizadores,email)){
-                        System.out.println("Aluno já se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Número de aluno: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numeroAluno = Long.parseLong(test);
-                    if(checkCodigo(utilizadores,numeroAluno)){
-                        System.out.println("Aluno já se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Ano de Matrícula: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    anoMatricula = Integer.parseInt(test);
-                    System.out.println("Regime do aluno: ");
-                    regime = sc.nextLine();
-                    while(!protectChar(regime)){
-                        System.out.println("Regime inválido, por favor introduza um regime válido: ");
-                        regime = sc.nextLine();
-                    }
-                    while(!protectRegime(regime)){
-                        System.out.println("Regime inválido, por favor introduza um regime válido: \nRegimes válidos:\ntrabalhador-estudante\natleta\ndirigente associativo\naluno de erasmus\nnormal");
-                        regime = sc.nextLine();
-                    }
-                    al = new Aluno(nome,email,numeroAluno,anoMatricula,regime);
-                    for(Pessoa ps: utilizadores){
-                        if(ps instanceof Aluno){
-                            if(((Aluno) ps).equals(al)){
-                                System.out.println("Aluno já existe no sistema");
-                            }
-                        }
-                    }
-                    utilizadores.add(al);
-                    System.out.println("Aluno adicionado ao sistema");
+                    inserirPessoa();
                     break;
                 case 2:
-                    boolean t = false;
-                    System.out.println("Numero de aluno: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numeroAluno = Long.parseLong(test);
-                    if(!checkCodigo(utilizadores,numeroAluno)){
-                        System.out.println("O aluno não se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Parâmetro a alterar: ");
-                    param = sc.nextLine();
-                    while(!protectArgs(param)){
-                        System.out.println("Parâmetro não existente por favor introduza um parâmetro válido: ");
-                        param = sc.nextLine();
-                    }
-                    t = changeParam(utilizadores,numeroAluno,param);
-                    if(t){
-                        System.out.println("Parâmetro mudado com sucesso");
-                    }
+                    alterarPessoa();
                     break;
                 case 3:
-                    System.out.println("Numero de aluno: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numeroAluno = Long.parseLong(test);
-                    if(!checkCodigo(utilizadores,numeroAluno)){
-                        System.out.println("O aluno não se encontra no sistema");
-                        break;
-                    }
-                    for(Pessoa ps: utilizadores){
-                        if(ps instanceof Aluno){
-                            if(((Aluno) ps).getNumeroAluno() == numeroAluno){
-                                utilizadores.remove(((Aluno) ps));
-                                nome = "done";
-                                System.out.println("Aluno removido com sucesso");
-                                break;
-                            }
-                        }
-                    }
-                    if(!nome.equals("done")){
-                        System.out.println("Aluno não existe no sistema");
-                    }
+                    removerPessoa();
                     break;
                 case 0:
                     dep.handleChoice(utilizadores,cursos,exames,salas);
@@ -296,6 +200,129 @@ public class Aluno extends Pessoa implements Serializable{
         }while(valor !=0);
     }
 
+
+    /**
+     * Método responsável por inserir um novo aluno no sistema
+     */
+    public void inserirPessoa(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Nome do aluno: ");
+        String test,nome;
+        Aluno al;
+        nome = sc.nextLine();
+        while(!protectChar(nome)){
+            System.out.println("Nome inválido, por favor introduza um nome válido: ");
+            nome = sc.nextLine();
+        }
+        System.out.println("Email: ");
+        email = sc.nextLine();
+        if(checkEmail(utilizadores,email)){
+            System.out.println("Aluno já se encontra no sistema");
+            return;
+        }
+        System.out.println("Número de aluno: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        numeroAluno = Long.parseLong(test);
+        if(checkCodigo(utilizadores,numeroAluno)){
+            System.out.println("Aluno já se encontra no sistema");
+            return;
+        }
+        System.out.println("Ano de Matrícula: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        anoMatricula = Integer.parseInt(test);
+        System.out.println("Regime do aluno: ");
+        regime = sc.nextLine();
+        while(!protectChar(regime)){
+            System.out.println("Regime inválido, por favor introduza um regime válido: ");
+            regime = sc.nextLine();
+        }
+        while(!protectRegime(regime)){
+            System.out.println("Regime inválido, por favor introduza um regime válido: \nRegimes válidos:\ntrabalhador-estudante\natleta\ndirigente associativo\naluno de erasmus\nnormal");
+            regime = sc.nextLine();
+        }
+        al = new Aluno(nome,email,numeroAluno,anoMatricula,regime);
+        for(Pessoa ps: utilizadores){
+            if(ps instanceof Aluno){
+                if(((Aluno) ps).equals(al)){
+                    System.out.println("Aluno já existe no sistema");
+                }
+            }
+        }
+        utilizadores.add(al);
+        System.out.println("Aluno adicionado ao sistema");
+    }
+
+    /**
+     * Método responsável por alterar os dados de um aluno
+     */
+
+    public void alterarPessoa(){
+        Scanner sc = new Scanner(System.in);
+        String test,param;
+        boolean t;
+        System.out.println("Numero de aluno: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        numeroAluno = Long.parseLong(test);
+        if(!checkCodigo(utilizadores,numeroAluno)){
+            System.out.println("O aluno não se encontra no sistema");
+            return;
+        }
+        System.out.println("Parâmetro a alterar: ");
+        param = sc.nextLine();
+        while(!protectArgs(param)){
+            System.out.println("Parâmetro não existente por favor introduza um parâmetro válido: ");
+            param = sc.nextLine();
+        }
+        t = changeParam(utilizadores,numeroAluno,param);
+        if(t){
+            System.out.println("Parâmetro mudado com sucesso");
+        }
+    }
+
+    /**
+     * Método responsável por remover um aluno do sistema
+     */
+
+    public void removerPessoa(){
+        Scanner sc = new Scanner(System.in);
+        String test;
+        System.out.println("Numero de aluno: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        numeroAluno = Long.parseLong(test);
+        if(!checkCodigo(utilizadores,numeroAluno)){
+            System.out.println("O aluno não se encontra no sistema");
+            return;
+        }
+        for(Pessoa ps: utilizadores){
+            if(ps instanceof Aluno){
+                if(((Aluno) ps).getNumeroAluno() == numeroAluno){
+                    utilizadores.remove(((Aluno) ps));
+                    nome = "done";
+                    System.out.println("Aluno removido com sucesso");
+                    break;
+                }
+            }
+        }
+        if(!nome.equals("done")){
+            System.out.println("Aluno não existe no sistema");
+        }
+    }
     /**
      * Método responsável por alterar dados do aluno
      * @param utilizadores ArrayList de pessoas

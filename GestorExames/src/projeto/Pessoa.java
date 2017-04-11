@@ -24,9 +24,10 @@ public abstract class Pessoa implements Serializable{
     /**
      * Método que apresenta ao utilizador o menu
      */
-    public void menuPessoas() {
-
-    }
+    public void menuPessoas() {}
+    public void inserirPessoa() {}
+    public void alterarPessoa() {}
+    public void removerPessoa() {}
 
     public String getNome() {
         return nome;

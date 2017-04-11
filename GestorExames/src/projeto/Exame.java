@@ -96,7 +96,7 @@ public class Exame implements Serializable{
      * @return bool Verifica se o input é válido ou não
      */
 
-    public static boolean isNumeric(String str) {
+    public boolean isNumeric(String str) {
         if (str == null) {
             return false;
         }
@@ -136,7 +136,7 @@ public class Exame implements Serializable{
             }
             switch (option){
                 case 1:
-                    exames.add(novoExame(utilizadores,cursos,exames,salas));
+                    exames.add(novoExame());
                     System.out.println("Exame adicionado com sucesso");
                     break;
                 case 2:
@@ -159,8 +159,8 @@ public class Exame implements Serializable{
                             System.out.println("Época inválida, por favor introduza uma época válida: ");
                             epoca = sc.nextLine();
                         }
-                        control = exa.inExameList(exames,cursos,disciplina,curso,epoca);
-                        temp = exa.returnExame(exames,disciplina,epoca,curso);
+                        control = exa.inExameList(disciplina,curso,epoca);
+                        temp = exa.returnExame(disciplina,epoca,curso);
                     } while(control || temp == null);
                     lancarNotas(temp);
                     break;
@@ -192,7 +192,7 @@ public class Exame implements Serializable{
                         }
                         control = checkParameter(parametro);
                     }while(!control);
-                    alterarExame(utilizadores,cursos,exames,salas,parametro,disciplina,curso,epoca);
+                    alterarExame(parametro,disciplina,curso,epoca);
                     break;
                 case 4:
                     do{
@@ -214,8 +214,8 @@ public class Exame implements Serializable{
                             System.out.println("Época inválida, por favor introduza uma época válida: ");
                             epoca = sc.nextLine();
                         }
-                        ctrl = exa.inExameList(exames,cursos,disciplina,curso,epoca);
-                        temp = exa.returnExame(exames,disciplina,epoca,curso);
+                        ctrl = exa.inExameList(disciplina,curso,epoca);
+                        temp = exa.returnExame(disciplina,epoca,curso);
                     }while(ctrl || temp == null);
                     for(Iterator<Exame> it = exames.iterator();it.hasNext();){
                         Exame ex = it.next();
@@ -224,7 +224,7 @@ public class Exame implements Serializable{
                             System.out.println("Exame removido com sucesso");
                         }
                     }
-                    recolocarDocentes(exames);
+                    recolocarDocentes();
                 case 0:
                     dep.handleChoice(utilizadores,cursos,exames,salas);
                     break;
@@ -238,10 +238,9 @@ public class Exame implements Serializable{
 
     /**
      * Método que permite recolocar os docentes que estavam indisponiveis de participar no exame e agora estão
-     * @param exames ArrayList de exames
      */
 
-    public void recolocarDocentes(ArrayList<Exame> exames) {
+    public void recolocarDocentes() {
         Docente docente = new Docente();
         for(Exame ex: exames){
             for(Docente doc: ex.getDisciplina().getDocentesAuxiliares()){
@@ -320,13 +319,9 @@ public class Exame implements Serializable{
      * @param param parâmetro a alterar
      * @param curso curso
      * @param disciplina disciplina
-     * @param utilizadores ArrayList de utilizadores
-     * @param cursos ArrayList de cursos
-     * @param exames ArrayList de exames
-     * @param salas ArrayList de salas
      */
 
-    public void alterarExame(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas,String param,String disciplina,String curso,String epoca){
+    public void alterarExame(String param,String disciplina,String curso,String epoca){
         String newValue,value2,response,valor;
         int value,test,i;
         boolean control = false, control2 = false;
@@ -338,7 +333,7 @@ public class Exame implements Serializable{
         Date exameDate = null;
         Sala newSala,sala = new Sala();
         Docente docente = new Docente();
-        ex = returnExame(exames,disciplina,epoca,curso);
+        ex = returnExame(disciplina,epoca,curso);
         switch (param.toLowerCase()){
             case "data":
                 while(!control){
@@ -352,7 +347,6 @@ public class Exame implements Serializable{
                         control = false;
                     }
                 }
-                control = false;
                 System.out.println("Nova duração do exame(minutos): ");
                 valor = sc.nextLine();
                 while (!isNumeric(valor)){
@@ -533,14 +527,10 @@ public class Exame implements Serializable{
 
     /**
      * Método que permite alterar dados de um exame
-     * @param utilizadores ArrayList de utilizadores
-     * @param cursos ArrayList de cursos
-     * @param exames ArrayList de exames
-     * @param salas ArrayList de salas
      * @return Exame novo Exame
      */
 
-    public Exame novoExame(ArrayList<Pessoa> utilizadores,ArrayList<Curso> cursos, ArrayList<Exame> exames, ArrayList<Sala> salas){
+    public Exame novoExame(){
         String curso,disc,epoca,docente,nDocente,novaSala,date,valor;
         int nDocentes,i,nFuncionarios,nAlunos;
         long aluno;
@@ -576,7 +566,7 @@ public class Exame implements Serializable{
                 System.out.println("Época inválida, por favor introduza uma época válida: ");
                 epoca = sc.nextLine();
             }
-            ctrl = inExameList(exames,cursos,disc,curso,epoca);
+            ctrl = inExameList(disc,curso,epoca);
         }while(!ctrl);
         disciplina = csr.parseDisciplina(cursos,disc,curso);
         finalCurso = csr.parseCurso(cursos,curso);
@@ -606,6 +596,16 @@ public class Exame implements Serializable{
         //docentes vigilantes e funcionarios
         System.out.println("A adicionar docentes da disciplina à lista de vigilantes...");
         ctrl = false;
+        //sala
+        do{
+            System.out.println("Sala para realizar o exame: ");
+            for(Sala sl: salas){
+                System.out.println(sl.toString());
+            }
+            novaSala = sc.nextLine();
+            ctrlSala = sala.verificaSala(salas,exames,novaSala,exameDate,duracao);
+            newSala = sala.returnSala(salas,novaSala);
+        }while(!ctrlSala);
         for(Exame ex: exames) {
             Date exDuration = ex.addMinutesToDate(ex.getDuracao(), ex.getDate());
             Date novaDuration = ex.addMinutesToDate(duracao,exameDate);
@@ -687,16 +687,6 @@ public class Exame implements Serializable{
                 }
             }
         }
-        //sala
-        do{
-            System.out.println("Sala para realizar o exame: ");
-            for(Sala sl: salas){
-                System.out.println(sl.toString());
-            }
-            novaSala = sc.nextLine();
-            ctrlSala = sala.verificaSala(salas,exames,novaSala,exameDate,duracao);
-            newSala = sala.returnSala(salas,novaSala);
-        }while(!ctrlSala);
         //associar alunos
         System.out.println("Número de alunos a associar ao exame: ");
         valor = sc.nextLine();
@@ -737,12 +727,10 @@ public class Exame implements Serializable{
      * @param epoca epoca do exame
      * @param curso curso
      * @param nomeDisciplina disciplina
-     * @param cursos ArrayList de cursos
-     * @param exames ArrayList de exames
      * @return bool verifica o resultado da operação
      */
 
-    public boolean inExameList(ArrayList<Exame> exames,ArrayList<Curso> cursos, String nomeDisciplina, String curso, String epoca){
+    public boolean inExameList(String nomeDisciplina, String curso, String epoca){
         Curso csr = new Curso();
         int checkInf;
         switch (checkInf = (csr.checkCursoInf(cursos,nomeDisciplina,curso))){
@@ -786,11 +774,10 @@ public class Exame implements Serializable{
      * @param epoca epoca do exame
      * @param curso curso
      * @param disciplina disciplina
-     * @param exames ArrayList de exames
      * @return Exame novo objeto do tipo Exame
      */
 
-    public Exame returnExame(ArrayList<Exame> exames,String disciplina,String epoca,String curso){
+    public Exame returnExame(String disciplina,String epoca,String curso){
         for(Exame ex: exames){
             if(ex.getDisciplina().getNome().equalsIgnoreCase(disciplina) && ex.getCurso().getNome().equalsIgnoreCase(curso) && ex.getTipoExame().equalsIgnoreCase(epoca)){
                 return ex;
@@ -825,6 +812,10 @@ public class Exame implements Serializable{
 
 
         System.out.println("Notas do exame de "+ex.getDisciplina().getNome()+" lançadas");
+    }
+
+    public void getExamData(){
+
     }
 
 

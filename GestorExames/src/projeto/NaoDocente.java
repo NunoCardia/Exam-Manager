@@ -149,94 +149,13 @@ public class NaoDocente extends Funcionario implements Serializable{
             }
             switch (valor){
                 case 1:
-                    System.out.println("Nome: ");
-                    nome = sc.nextLine();
-                    while(!protectChar(nome)){
-                        System.out.println("Nome inválido, por favor introduza um nome válido: ");
-                        nome = sc.nextLine();
-                    }
-                    System.out.println("Email: ");
-                    email = sc.nextLine();
-                    if(checkEmail(utilizadores,email)){
-                        System.out.println("Não docente já se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Número: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numero = Long.parseLong(test);
-                    if(checkCodigo(utilizadores,numero)){
-                        System.out.println("Não docente já se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Categoria: ");
-                    categoria = sc.nextLine();
-                    while(!protectChar(categoria)){
-                        System.out.println("Categoria inválida, por favor introduza uma categoria válida: ");
-                        categoria = sc.nextLine();
-                    }
-                    System.out.println("Cargo: ");
-                    cargo = sc.nextLine();
-                    while(!protectChar(cargo)){
-                        System.out.println("Cargo inválido, por favor introduza um cargo válido: ");
-                        cargo = sc.nextLine();
-                    }
-                    doc = new NaoDocente(nome,email,numero,categoria,cargo);
-                    utilizadores.add(doc);
-                    System.out.println("Não docente adicionado ao sistema");
+                    inserirPessoa();
                     break;
                 case 2:
-                    boolean t = false;
-                    System.out.println("Número mecanicográfico do não docente: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numero = Long.parseLong(test);
-                    if(!checkCodigo(utilizadores,numero)){
-                        System.out.println("O não docente não se encontra no sistema");
-                        break;
-                    }
-                    System.out.println("Parâmetro a alterar: ");
-                    param = sc.nextLine();
-                    while(!protectArgs(param)){
-                        System.out.println("Parâmetro não existente por favor introduza um parâmetro válido: ");
-                        param = sc.nextLine();
-                    }
-                    t = changeParam(utilizadores,numero,param);
-                    if(t){
-                        System.out.println("Parâmetro mudado com sucesso");
-                    }
+                    alterarPessoa();
                     break;
                 case 3:
-                    System.out.println("Número mecanicográfico do não docente: ");
-                    test = sc.nextLine();
-                    while(!isNumeric(test)){
-                        System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
-                        test = sc.nextLine();
-                    }
-                    numero = Long.parseLong(test);
-                    if(!checkCodigo(utilizadores,numero)){
-                        System.out.println("O não docente não se encontra no sistema");
-                        break;
-                    }
-                    for(Pessoa ps: utilizadores){
-                        if(ps instanceof NaoDocente){
-                            if(((NaoDocente) ps).getNumero() == numero){
-                                utilizadores.remove(((NaoDocente) ps));
-                                nome = "done";
-                                System.out.println("Não docente removido com sucesso");
-                                break;
-                            }
-                        }
-                    }
-                    if(!nome.equals("done")){
-                        System.out.println("Não docente não existe no sistema");
-                    }
+                    removerPessoa();
                     break;
                 case 0:
                     dep.handleChoice(utilizadores,cursos,exames,salas);
@@ -246,7 +165,115 @@ public class NaoDocente extends Funcionario implements Serializable{
                     break;
 
             }
-        }while(valor !=0);
+        }while(valor!=0);
+    }
+
+    /**
+     * Método responsável por remover um aluno do sistema
+     */
+    public void removerPessoa(){
+        Scanner sc = new Scanner(System.in);
+        String test;
+        System.out.println("Número mecanicográfico do não docente: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        numero = Long.parseLong(test);
+        if(!checkCodigo(utilizadores,numero)){
+            System.out.println("O não docente não se encontra no sistema");
+            return;
+        }
+        for(Pessoa ps: utilizadores){
+            if(ps instanceof NaoDocente){
+                if(((NaoDocente) ps).getNumero() == numero){
+                    utilizadores.remove(((NaoDocente) ps));
+                    nome = "done";
+                    System.out.println("Não docente removido com sucesso");
+                    break;
+                }
+            }
+        }
+        if(!nome.equals("done")){
+            System.out.println("Não docente não existe no sistema");
+        }
+    }
+    /**
+     * Método responsável por alterar os dados de um aluno
+     */
+    public void alterarPessoa(){
+        String test,param;
+        Scanner sc = new Scanner(System.in);
+        boolean t;
+        System.out.println("Número mecanicográfico do não docente: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        numero = Long.parseLong(test);
+        if(!checkCodigo(utilizadores,numero)){
+            System.out.println("O não docente não se encontra no sistema");
+            return;
+        }
+        System.out.println("Parâmetro a alterar: ");
+        param = sc.nextLine();
+        while(!protectArgs(param)){
+            System.out.println("Parâmetro não existente por favor introduza um parâmetro válido: ");
+            param = sc.nextLine();
+        }
+        t = changeParam(utilizadores,numero,param);
+        if(t){
+            System.out.println("Parâmetro mudado com sucesso");
+        }
+    }
+
+    /**
+     * Método responsável por inserir um novo aluno no sistema
+     */
+    public void inserirPessoa(){
+        Scanner sc = new Scanner(System.in);
+        String test;
+        NaoDocente doc;
+        System.out.println("Nome: ");
+        nome = sc.nextLine();
+        while(!protectChar(nome)){
+            System.out.println("Nome inválido, por favor introduza um nome válido: ");
+            nome = sc.nextLine();
+        }
+        System.out.println("Email: ");
+        email = sc.nextLine();
+        if(checkEmail(utilizadores,email)){
+            System.out.println("Não docente já se encontra no sistema");
+            return;
+        }
+        System.out.println("Número: ");
+        test = sc.nextLine();
+        while(!isNumeric(test)){
+            System.out.println("O que introduziu não é um número, por favor introduza um número válido: ");
+            test = sc.nextLine();
+        }
+        numero = Long.parseLong(test);
+        if(checkCodigo(utilizadores,numero)){
+            System.out.println("Não docente já se encontra no sistema");
+            return;
+        }
+        System.out.println("Categoria: ");
+        categoria = sc.nextLine();
+        while(!protectChar(categoria)){
+            System.out.println("Categoria inválida, por favor introduza uma categoria válida: ");
+            categoria = sc.nextLine();
+        }
+        System.out.println("Cargo: ");
+        cargo = sc.nextLine();
+        while(!protectChar(cargo)){
+            System.out.println("Cargo inválido, por favor introduza um cargo válido: ");
+            cargo = sc.nextLine();
+        }
+        doc = new NaoDocente(nome,email,numero,categoria,cargo);
+        utilizadores.add(doc);
+        System.out.println("Não docente adicionado ao sistema");
     }
 
     /**
